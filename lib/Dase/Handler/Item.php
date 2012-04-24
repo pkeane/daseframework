@@ -33,14 +33,13 @@ class Dase_Handler_Item extends Dase_Handler
 
 		public function getEditForm($r) 
 		{
-				$t = new Dase_Template($r);
 				$item = new Dase_DBO_Item($this->db);
 				if (!$item->load($r->get('id'))) {
 						$r->renderRedirect('items');
 						//$r->renderError(404);
 				}
-				$t->assign('item',$item);
-				$r->renderResponse($t->fetch('framework/admin_item_edit.tpl'));
+				$r->assign('item',$item);
+				$r->renderTemplate('framework/admin_item_edit.tpl');
 		}
 
 		public function getListJson($r) 
@@ -57,15 +56,14 @@ class Dase_Handler_Item extends Dase_Handler
 
 		public function getItem($r) 
 		{
-				$t = new Dase_Template($r);
 				//if no format, assume name is ID
 				$item = new Dase_DBO_Item($this->db);
 				if ($item->load($r->get('name'))) {
 						$item->getSets();
-						$t->assign('item',$item);
+						$r->assign('item',$item);
 						$sets = Dase_DBO_Itemset::getList($this->db);
-						$t->assign('sets',$sets);
-						$r->renderResponse($t->fetch('framework/item.tpl'));
+						$r->assign('sets',$sets);
+						$r->renderTemplate('framework/item.tpl');
 				} else {
 						$r->renderRedirect('items');
 						//$r->renderError(404);

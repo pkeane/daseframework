@@ -18,9 +18,8 @@ class Dase_Handler_Home extends Dase_Handler
 
 	public function getHome($r) 
 	{
-		$t = new Dase_Template($r);
 		//$t->assign('lab_thumbs',Dase_DBO_Itemset::getByName($this->db,$r,'lab_thumbs'));
-		$r->renderResponse($t->fetch('home.tpl'));
+		$r->renderTemplate('home.tpl');
 	}
 
 	public function postToHome($r) 

@@ -15,14 +15,12 @@ class Dase_Handler_User extends Dase_Handler
 
 	public function getSettings($r) 
 	{
-		$t = new Dase_Template($r);
-		$r->renderResponse($t->fetch('framework/user_settings.tpl'));
+		$r->renderTemplate('framework/user_settings.tpl');
 	}
 
 	public function getUser($r) 
 	{
-		$t = new Dase_Template($r);
-		$r->renderResponse($t->fetch('framework/home.tpl'));
+		$r->renderTemplate('framework/home.tpl');
 	}
 
 	public function postToEmail($r)

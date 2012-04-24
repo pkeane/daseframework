@@ -20,7 +20,6 @@ class Dase_Handler_Directory extends Dase_Handler
 	protected function setup($r)
 	{
 		$this->user = $r->getUser();
-		$this->tpl = new Dase_Template($r);
 	}
 
 	public function getSearchForm($r) 
@@ -28,10 +27,10 @@ class Dase_Handler_Directory extends Dase_Handler
 		if ($r->get('lastname')) {
 			$results = Utlookup::lookup($r->get('lastname'),'sn');
 			usort($results,'sortByName');
-			$this->tpl->assign('lastname',$r->get('lastname'));
-			$this->tpl->assign('results',$results);
+			$r->assign('lastname',$r->get('lastname'));
+			$r->assign('results',$results);
 		}
-		$r->renderResponse($this->tpl->fetch('framework/directory.tpl'));
+		$r->renderTemplate('framework/directory.tpl');
 	}
 }
 

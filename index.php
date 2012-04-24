@@ -28,7 +28,7 @@ define('START_TIME',Dase_Util::getTime());
 
 $db = new Dase_DB($config);
 $r = new Dase_Request();
-$tpl = new Dase_Template($r);
+$template = new Dase_Template($r);
 
-$r->init($db,$config,$tpl);
+$r->init($db,$config,$template);
 $r->getHandlerObject()->dispatch($r);

@@ -63,7 +63,7 @@ class Dase_Request
     public $module;
     public $path;
     public $request_uri;
-    public $tpl;
+    public $template;
 	public $user;
     public $user_is_null_user; //needed to allow Twig to NOT force login
 
@@ -89,9 +89,9 @@ class Dase_Request
         $this->log->pushHandler(new StreamHandler(LOG_FILE,LOG_LEVEL));
 	}
 
-	public function init($db,$config,$tpl)
+	public function init($db,$config,$template)
 	{
-		$this->tpl = $tpl;
+		$this->template = $template;
 		$this->db = $db;
 		$this->config = $config;
         $this->checkForceHttps($config);
@@ -141,6 +141,11 @@ class Dase_Request
     public function __call( $method,$args ) 
     {
         return $this->sf_request->$method($args);
+    }
+
+    public function assign($key,$val)
+    {
+        $this->template->assign($key,$val);
     }
 
     public function checkForceHttps($config)
@@ -523,6 +528,18 @@ class Dase_Request
 
 	public function renderResponse($content,$set_cache=true,$status_code=null)
 	{
+		$response = new Response($content);
+        $response->headers->set('Content-Type',$this->mime);
+		if ('get' != $this->method) {
+			$set_cache = false;
+		}
+        $response->send();
+		exit;
+	}
+
+	public function renderTemplate($path)
+	{
+        $content = $this->template->fetch($path);
 		$response = new Response($content);
         $response->headers->set('Content-Type',$this->mime);
 		if ('get' != $this->method) {
