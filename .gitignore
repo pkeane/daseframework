@@ -1,0 +1,8 @@
+# this file is here for projects that use the dase framework
+# and may have source managed w/ git
+
+inc/local_config.php
+files/*
+
+
+

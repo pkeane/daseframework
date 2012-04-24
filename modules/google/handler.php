@@ -77,7 +77,7 @@ class Dase_ModuleHandler_Google extends Dase_Handler
         //$return_to = $r->app_root . '/login';
         //$logout_url = 'http://www.google.com/accounts/Logout?continue='.$return_to;
         $logout_url = 'http://www.google.com/accounts/Logout';
-        $r->response_mime_type = 'application/json';
+        $r->mime = 'application/json';
         $json = Dase_Json::get(array('location' => $logout_url));
         $r->renderResponse($json);
     }

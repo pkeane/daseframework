@@ -557,10 +557,8 @@ class Dase_Request
         //unclear if Symfony Resp Obj supports this
 		if (!file_exists($path)) {
             $this->renderError(404);
-            /*
 			header('Content-Type: image/jpeg');
 			readfile(BASE_PATH.'/www/images/unavail.jpg');
-             */
 			exit;
 		}
 		$filename = basename($path);

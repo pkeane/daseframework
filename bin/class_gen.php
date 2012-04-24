@@ -17,15 +17,19 @@ function capFirst (&$item,$key) {
 }
 foreach ($db->listTables() as $table) {
 	$cols = array();
+    $getters = array();
 	foreach ($db->listColumns($table) as $col) {
 		if ('id' != $col) {
 			$cols[] = "'$col'";
+            $getter = '    public function get'.ucfirst($col).'() { return $this->'.$col.'; }';
+            $getters[] = $getter;
 		}
 	}
 	$cols_list = implode(',',$cols);
 	$parts = explode('_',$table);
 	array_walk($parts,'capFirst');
 	$class_root_name = implode('',$parts);
+    $getter_text = join("\n",$getters);
 	$db_class_name = 'Dase_DBO_Autogen_' . $class_root_name;
 	$db_class_text = "<?php
 
@@ -49,6 +53,7 @@ class $db_class_name extends Dase_DBO
 			}
 		}
 	}
+$getter_text
 }";		
 $db_class_filepath = $class_dir . '/DBO/Autogen/' . $class_root_name . '.php';
 $fh = fopen($db_class_filepath,'w');

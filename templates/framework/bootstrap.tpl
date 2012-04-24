@@ -43,12 +43,12 @@
                     <a class="brand" href="#">{{ main_title }}</a>
 					<ul class="nav">
 						<li class="active"><a href="home">Home</a></li>
-						{if $request->user}
-						{if $request->user->is_admin}
+                        {% if request.user %}
+						{% if request.user.is_admin %}
 						<li><a href="admin">admin</a></li>
-						{/if}
-						<li><a href="login/{$request->user->eid}" class="delete">logout {$request->user->eid}</a></li>
-						{/if}
+						{% endif %}
+                        <li id="login"><a href="login/{{ request.user.eid }}" class="delete">logout {{ request.user.eid }}</a></li>
+						{% endif %}
 					</ul>
 				</div>
 			</div>
@@ -57,7 +57,7 @@
 
 		<div class="container">
 			{% block main %}
-			{% if msg %}<h3 class="msg">{$msg}</h3>{% endif %}
+            {% if msg %}<h3 class="msg">{{ msg }}</h3>{% endif %}
 			{% block content %}
 
 			<!-- Main hero unit for a primary marketing message or call to action -->

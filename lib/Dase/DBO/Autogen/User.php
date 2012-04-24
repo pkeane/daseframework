@@ -20,4 +20,8 @@ class Dase_DBO_Autogen_User extends Dase_DBO
 			}
 		}
 	}
+    public function getEid() { return $this->eid; }
+    public function getName() { return $this->name; }
+    public function getEmail() { return $this->email; }
+    public function getIs_admin() { return $this->is_admin; }
 }

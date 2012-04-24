@@ -10,15 +10,15 @@ class Dase_Handler_File extends Dase_Handler
 		public function getFile($r) 
 		{ 
 				$media_dir = $this->config->getMediaDir();
-				$file_path = $media_dir.'/'.$r->get('name').'.'.$r->getFormat();
-				$r->serveFile($file_path,$r->response_mime_type);
+				$file_path = $media_dir.'/'.$r->get('name').'.'.$r->ext;
+				$r->serveFile($file_path,$r->mime);
 		}
 
 		public function getThumbnail($r) 
 		{ 
 				$media_dir = $this->config->getMediaDir();
-				$file_path = $media_dir.'/thumb/'.$r->get('name').'.'.$r->getFormat();
-				$r->serveFile($file_path,$r->response_mime_type);
+				$file_path = $media_dir.'/thumb/'.$r->get('name').'.'.$r->ext;
+				$r->serveFile($file_path,$r->mime);
 		}
 
 		public function getFileJpg($r) { return $this->getFile($r); }

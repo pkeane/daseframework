@@ -20,4 +20,21 @@ class Dase_DBO_Autogen_Item extends Dase_DBO
 			}
 		}
 	}
+    public function getName() { return $this->name; }
+    public function getTitle() { return $this->title; }
+    public function getBody() { return $this->body; }
+    public function getUrl() { return $this->url; }
+    public function getFile_url() { return $this->file_url; }
+    public function getThumbnail_url() { return $this->thumbnail_url; }
+    public function getFilesize() { return $this->filesize; }
+    public function getMime() { return $this->mime; }
+    public function getWidth() { return $this->width; }
+    public function getHeight() { return $this->height; }
+    public function getMeta1() { return $this->meta1; }
+    public function getMeta2() { return $this->meta2; }
+    public function getMeta3() { return $this->meta3; }
+    public function getCreated() { return $this->created; }
+    public function getCreated_by() { return $this->created_by; }
+    public function getUpdated() { return $this->updated; }
+    public function getUpdated_by() { return $this->updated_by; }
 }

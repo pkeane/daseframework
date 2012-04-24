@@ -20,4 +20,8 @@ class Dase_DBO_Autogen_ItemsetItem extends Dase_DBO
 			}
 		}
 	}
+    public function getItemset_id() { return $this->itemset_id; }
+    public function getItem_id() { return $this->item_id; }
+    public function getCreated() { return $this->created; }
+    public function getSort_order() { return $this->sort_order; }
 }

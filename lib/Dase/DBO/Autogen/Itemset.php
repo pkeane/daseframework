@@ -20,4 +20,8 @@ class Dase_DBO_Autogen_Itemset extends Dase_DBO
 			}
 		}
 	}
+    public function getName() { return $this->name; }
+    public function getTitle() { return $this->title; }
+    public function getCreated() { return $this->created; }
+    public function getCreated_by() { return $this->created_by; }
 }

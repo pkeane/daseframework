@@ -1,0 +1,13 @@
+DirectoryIndex index.php index.html
+AddType application/x-httpd-php .php
+Options FollowSymLinks
+FileETag none
+
+RewriteEngine On
+RewriteBase  /newdase  
+
+php_flag magic_quotes_gpc off
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [PT] 

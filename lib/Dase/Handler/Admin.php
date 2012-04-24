@@ -15,14 +15,12 @@ class Dase_Handler_Admin extends Dase_Handler
 		protected function setup($r)
 		{
             $this->t = new Dase_Template($r);
-            /*
-				$this->user = $r->getUser();
-				if ($this->user->is_admin) {
-						//ok
-				} else {
-						$r->renderError(401);
-				}
-             */
+            $this->user = $r->getUser();
+            if ($this->user->is_admin) {
+                //ok
+            } else {
+                $r->renderError(401);
+            }
 		}
 
 		/* 
@@ -71,7 +69,7 @@ class Dase_Handler_Admin extends Dase_Handler
 						curl_close($ch);  
 						$r->renderRedirect('admin/cats');
 				} else {
-						$t->assign('item',$item);
+						$this->t->assign('item',$item);
 						$r->renderResponse($this->t->fetch('framework/cats.tpl'));
 				}
 		}
@@ -81,7 +79,7 @@ class Dase_Handler_Admin extends Dase_Handler
 				/*
 				$items = new Dase_DBO_Item($this->db);
 				$items->orderBy('updated DESC');
-				$t->assign('items',$items->findAll(1));
+				$this->t->assign('items',$items->findAll(1));
 				 */
 				$r->renderResponse($this->t->fetch('framework/admin_create_content.tpl'));
 		}
@@ -195,7 +193,7 @@ class Dase_Handler_Admin extends Dase_Handler
 		{
 				$users = new Dase_DBO_User($this->db);
 				$users->orderBy('name');
-				$t->assign('users', $users->findAll(1));
+				$this->t->assign('users', $users->findAll(1));
 				$r->renderResponse($this->t->fetch('framework/admin_users.tpl'));
 		}
 
@@ -205,9 +203,9 @@ class Dase_Handler_Admin extends Dase_Handler
 				$u = new Dase_DBO_User($this->db);
 				$u->eid = $r->get('eid');
 				if ($u->findOne()) {
-						$t->assign('user',$u);
+						$this->t->assign('user',$u);
 				}
-				$t->assign('record',$record);
+				$this->t->assign('record',$record);
 				$r->renderResponse($this->t->fetch('framework/add_user_form.tpl'));
 		}
 
