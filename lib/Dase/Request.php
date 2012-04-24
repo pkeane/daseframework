@@ -118,6 +118,34 @@ class Dase_Request
         $this->params = $params; 
     }
 
+    public function has($key)
+    {
+        if ($this->sf_request->request->has($key)) {
+            return true;
+        }
+        if ($this->sf_request->query->has($key)) {
+            return true;
+        }
+        if ($this->params[$key]) {
+            return true;
+        }
+        return false;
+    }
+
+    //todo: work on returning arrays when appropriate
+    public function get($key)
+    {
+        if ($this->sf_request->request->has($key)) {
+            return $this->sf_request->request->filter($key);
+        }
+        if ($this->sf_request->query->has($key)) {
+            return $this->sf_request->query->filter($key);
+        }
+        if ($this->params[$key]) {
+            return $this->params[$key];
+        }
+    }
+
     public function __call( $method,$args ) 
     {
         return $this->sf_request->$method($args);
@@ -169,7 +197,7 @@ class Dase_Request
 
 	public function checkUrlAuth()
 	{
-		$url = $this->app_root.'/'.$this->getPath(false);
+		$url = $this->app_root.'/'.$this->path;
 		$expires = $this->get('expires');
 		$auth_token = $this->get('auth_token');
 
@@ -297,7 +325,7 @@ class Dase_Request
 
 	public function getCookie($cookie_type)
 	{
-		return $this->eid_cookie->get($cookie_type,$this->env['_cookie']);
+		return $this->eid_cookie->get($cookie_type,$_COOKIE);
 	}
 
 	public function clearCookies()
@@ -345,7 +373,7 @@ class Dase_Request
 
 	public function getModule()
 	{
-		$parts = explode('/',trim($this->getPath(),'/'));
+		$parts = explode('/',trim($this->path,'/'));
 		$first = array_shift($parts);
 		if ('modules' == $first) {
 			if(!isset($parts[0])) {
@@ -370,21 +398,6 @@ class Dase_Request
 		} else {
 			return $first;
 		}
-	}
-
-	public function getPath($strip_extension=true)
-	{
-        if ($strip_extension) {
-            return $this->path;
-        } else {
-            $pathinfo = $this->sf_request->getPathInfo();
-        }
-	}
-
-	public function getUrl() 
-	{
-		$this->path = $this->path ? $this->path : $this->getPath();
-		return trim($this->path . '?' . $this->query_string,'?');
 	}
 
 	public function initUser()
@@ -414,7 +427,7 @@ class Dase_Request
 
 		switch ($auth) {
 		case 'cookie':
-			$eid = $this->eid_cookie->getEid($this->_cookie);
+			$eid = $this->eid_cookie->getEid($_COOKIE);
 			break;
 		case 'http':
 			$eid = $this->_authenticate();
@@ -451,7 +464,7 @@ class Dase_Request
 		} else {
 			if (!$force_login) { return false; }
 			if ('html' == $this->format) {
-				$params['target'] = $this->getUrl();
+				$params['target'] = $this->sf_request->getUri();
 				$this->renderRedirect('login/form',$params);
 			} else {
 				//last chance, check url auth but it 
@@ -597,10 +610,28 @@ class Dase_Request
 
 	public function renderRedirect($path='',$params=null)
 	{
-        //todo: deal w/ params
-        $response = new RedirectResponse($path);
+        $query_array = array();
+        if (isset($params) && is_array($params)) {
+            foreach ($params as $key => $val) {
+                $query_array[] = urlencode($key).'='.urlencode($val);
+            }
+        }
+        if ('http' != substr($path,0,4)) {
+            $redirect_path = trim($this->app_root,'/') . "/" . trim($path,'/');
+        } else {
+            $redirect_path = $path;
+        }
+        if (count($query_array)) {
+            //since path is allowed to have some query params already
+            if (false !== strpos($path,'?')) {
+                $redirect_path .= '&'.join("&",$query_array);
+            } else {
+                $redirect_path .= '?'.join("&",$query_array);
+            }
+        }
+        $response = new RedirectResponse($redirect_path);
         $response->send();
-		exit;
+        exit;
 	}
 
 	public function renderError($code,$msg='',$log_error=true)

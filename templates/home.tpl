@@ -1,3 +1,3 @@
-{extends file="framework/bootstrap.tpl"}
+{% extends "framework/bootstrap.tpl" %}
 
-{block name="title"}{$main_title}{/block}
+{% block title %}{{ main_title }}{% endblock %}
