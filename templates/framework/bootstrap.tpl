@@ -57,7 +57,7 @@
 
 		<div class="container">
 			{% block main %}
-			{if $msg}<h3 class="msg">{$msg}</h3>{/if}
+			{% if msg %}<h3 class="msg">{$msg}</h3>{% endif %}
 			{% block content %}
 
 			<!-- Main hero unit for a primary marketing message or call to action -->

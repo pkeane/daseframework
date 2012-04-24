@@ -54,7 +54,12 @@ class Dase_Request
 	private $serviceusers = array();
 	private $superusers = array();
 	private $url_params = array();
-	private $user;
+
+    //need to make user public so
+    //null user can be exposed to Twig template and
+    //wont force login
+	public $user;
+    public $user_is_null_user;
 
     private $sf_request;
     private $sf_response;
@@ -106,6 +111,12 @@ class Dase_Request
 		$this->initPlugin();
 		$this->logRequest();
 	}
+
+    //todo: needs work -- set by handler route var matches
+    public function setParams($params) 
+    {
+        $this->params = $params; 
+    }
 
     public function __call( $method,$args ) 
     {
@@ -379,6 +390,10 @@ class Dase_Request
 	public function initUser()
 	{
 		$this->null_user = Dase_User::get($this->db,$this->config);
+
+        //so Twig template does not force login
+		$this->user = Dase_User::get($this->db,$this->config);
+        $this->user_is_null_user = 1;
 	}
 
 	public function setUser($user)
@@ -388,13 +403,13 @@ class Dase_Request
 
 	public function getUser($auth='cookie',$force_login=true)
 	{
-		if ($this->user) {
+		if ($this->user && !$this->user_is_null_user) {
 			return $this->user;
 		}
 
 		//allow auth type to be forced w/ query param
-		if ($this->has('auth')) {
-			$auth = $this->get('auth');
+		if ($this->sf_request->query->has('auth')) {
+			$auth = $this->sf_request->query->get('auth');
 		}
 
 		switch ($auth) {
@@ -420,6 +435,7 @@ class Dase_Request
 		if ($eid) {
 			$u = clone $this->null_user;
 			$this->user = $u->retrieveByEid($eid);
+            $this->user_is_null_user = 0;
 		}
 
 		if ($eid && $this->user) {
