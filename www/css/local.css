@@ -1,0 +1,10 @@
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+
+#wordmark {
+	background:url("../img/wordMarkBkg.png") repeat-x scroll center bottom #FFFFFF;
+	text-align: center;
+}
+

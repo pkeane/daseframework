@@ -1,0 +1,27 @@
+<?php
+
+$conf['db']['type'] = 'mysql';
+$conf['db']['host'] = 'localhost';
+$conf['db']['name'] = 'dase';
+$conf['db']['user'] = 'xxxxx';
+$conf['db']['pass'] = 'xxxxx';
+$conf['db']['table_prefix'] = '';
+
+$conf['app']['main_title'] = "dase development";
+$conf['app']['media_dir'] = '/mnt/www-data/dase/media';
+
+/*
+$conf['app']['main_title'] = "";
+$conf['local']['page_logo_link_target'] = 'http://www.utexas.edu';
+$conf['local']['page_logo_src'] = 'www/images/myimage.jpg';
+ */
+
+$conf['app']['default_handler'] = 'collections';
+
+$conf['auth']['superuser']['myname'] = 'mypass';
+$conf['auth']['token'] = 'auth';
+$conf['auth']['ppd_token'] = "ppd";
+$conf['auth']['service_token'] = "service";
+$conf['auth']['serviceuser']['test'] = 'ok';
+
+$conf['search']['solr_base_url'] = 'http://www.example.com:8080/solr';
