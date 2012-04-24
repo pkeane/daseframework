@@ -21,7 +21,7 @@ foreach ($db->listTables() as $table) {
 	foreach ($db->listColumns($table) as $col) {
 		if ('id' != $col) {
 			$cols[] = "'$col'";
-            $getter = '    public function get'.ucfirst($col).'() { return $this->'.$col.'; }';
+            $getter = '    public function get'.ucfirst($col).'() { return $this->fields["'.$col.'"]; }';
             $getters[] = $getter;
 		}
 	}
@@ -49,7 +49,7 @@ class $db_class_name extends Dase_DBO
 		parent::__construct(\$db,'$table', array($cols_list));
 		if (\$assoc) {
 			foreach ( \$assoc as \$key => \$value) {
-				\$this->\$key = \$value;
+				\$this->fields[\$key] = \$value;
 			}
 		}
 	}

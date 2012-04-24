@@ -16,25 +16,25 @@ class Dase_DBO_Autogen_Item extends Dase_DBO
 		parent::__construct($db,'item', array('name','title','body','url','file_url','thumbnail_url','filesize','mime','width','height','meta1','meta2','meta3','created','created_by','updated','updated_by'));
 		if ($assoc) {
 			foreach ( $assoc as $key => $value) {
-				$this->$key = $value;
+				$this->fields[$key] = $value;
 			}
 		}
 	}
-    public function getName() { return $this->name; }
-    public function getTitle() { return $this->title; }
-    public function getBody() { return $this->body; }
-    public function getUrl() { return $this->url; }
-    public function getFile_url() { return $this->file_url; }
-    public function getThumbnail_url() { return $this->thumbnail_url; }
-    public function getFilesize() { return $this->filesize; }
-    public function getMime() { return $this->mime; }
-    public function getWidth() { return $this->width; }
-    public function getHeight() { return $this->height; }
-    public function getMeta1() { return $this->meta1; }
-    public function getMeta2() { return $this->meta2; }
-    public function getMeta3() { return $this->meta3; }
-    public function getCreated() { return $this->created; }
-    public function getCreated_by() { return $this->created_by; }
-    public function getUpdated() { return $this->updated; }
-    public function getUpdated_by() { return $this->updated_by; }
+    public function getName() { return $this->fields["name"]; }
+    public function getTitle() { return $this->fields["title"]; }
+    public function getBody() { return $this->fields["body"]; }
+    public function getUrl() { return $this->fields["url"]; }
+    public function getFile_url() { return $this->fields["file_url"]; }
+    public function getThumbnail_url() { return $this->fields["thumbnail_url"]; }
+    public function getFilesize() { return $this->fields["filesize"]; }
+    public function getMime() { return $this->fields["mime"]; }
+    public function getWidth() { return $this->fields["width"]; }
+    public function getHeight() { return $this->fields["height"]; }
+    public function getMeta1() { return $this->fields["meta1"]; }
+    public function getMeta2() { return $this->fields["meta2"]; }
+    public function getMeta3() { return $this->fields["meta3"]; }
+    public function getCreated() { return $this->fields["created"]; }
+    public function getCreated_by() { return $this->fields["created_by"]; }
+    public function getUpdated() { return $this->fields["updated"]; }
+    public function getUpdated_by() { return $this->fields["updated_by"]; }
 }

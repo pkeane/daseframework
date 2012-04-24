@@ -9,7 +9,7 @@ class Dase_DBO_Exception extends Exception {}
 
 class Dase_DBO implements IteratorAggregate
 {
-	private $fields = array(); 
+	protected $fields = array(); 
 	private $table;
 	protected $limit;
 	protected $order_by;

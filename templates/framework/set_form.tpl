@@ -1,6 +1,6 @@
-{extends file="framework/bootstrap.tpl"}
+{% extends "framework/bootstrap.tpl" %}
 
-{block name="content"}
+{% block content %}
 <div class="controls">
 	<a href="items">view items</a> |
 	<a href="set/list">view sets</a> |
@@ -13,4 +13,4 @@
 	<input type="text" name="title">
 	<input type="submit" value="create set">
 </form>
-{/block}
+{% endblock %}

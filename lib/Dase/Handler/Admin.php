@@ -14,7 +14,6 @@ class Dase_Handler_Admin extends Dase_Handler
 
 		protected function setup($r)
 		{
-            $this->t = new Dase_Template($r);
             $this->user = $r->getUser();
             if ($this->user->is_admin) {
                 //ok
@@ -70,7 +69,7 @@ class Dase_Handler_Admin extends Dase_Handler
 						$r->renderRedirect('admin/cats');
 				} else {
 						$this->t->assign('item',$item);
-						$r->renderResponse($this->t->fetch('framework/cats.tpl'));
+						$r->renderResponse($r->tpl->fetch('framework/cats.tpl'));
 				}
 		}
 
@@ -81,7 +80,7 @@ class Dase_Handler_Admin extends Dase_Handler
 				$items->orderBy('updated DESC');
 				$this->t->assign('items',$items->findAll(1));
 				 */
-				$r->renderResponse($this->t->fetch('framework/admin_create_content.tpl'));
+				$r->renderResponse($r->tpl->fetch('framework/admin_create_content.tpl'));
 		}
 
 		public function postToContentForm($r)

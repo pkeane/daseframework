@@ -1,6 +1,6 @@
-{extends file="framework/bootstrap.tpl"}
+{% extends "framework/bootstrap.tpl" %}
 
-{block name="content"}
+{% block content %}
 <div class="controls">
 	<a href="items">view items</a> |
 	view sets |
@@ -9,8 +9,8 @@
 </div>
 <h1>Sets</h1>
 <ul class="sets">
-	{foreach item=set from=$sets}
-	<li><a href="set/{$set->name}">{$set->title}</a></li>
-	{/foreach}
+	{% for set in sets %}
+	<li><a href="set/{{ set.name }}">{{ set.title }}</a></li>
+	{% endfor %}
 </ul>
-{/block}
+{% endblock %}

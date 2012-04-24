@@ -42,39 +42,30 @@ class Dase_Request
 	private $config;
 	private $db;
 	private $default_handler;
+	private $eid_cookie;
 	private $eid_is_serviceuser;
 	private $eid_is_superuser;
-	private $env = array();
-	private $eid_cookie;
-
-	//members are variables 'set'
-	private $members = array();
 	private $null_user;
 	private $params;
 	private $serviceusers = array();
-	private $superusers = array();
-	private $url_params = array();
-
-    //need to make user public so
-    //null user can be exposed to Twig template and
-    //wont force login
-	public $user;
-    public $user_is_null_user;
-
     private $sf_request;
     private $sf_response;
+	private $superusers = array();
 
-    public $method;
-    public $format;
-    public $mime;
-    public $path;
+    public $app_root;
     public $ext;
+    public $format;
     public $handler;
     public $handler_path;
-    public $module;
-    public $app_root;
     public $log;
+    public $method;
+    public $mime;
+    public $module;
+    public $path;
     public $request_uri;
+    public $tpl;
+	public $user;
+    public $user_is_null_user; //needed to allow Twig to NOT force login
 
 	public function __construct()
 	{
@@ -98,8 +89,9 @@ class Dase_Request
         $this->log->pushHandler(new StreamHandler(LOG_FILE,LOG_LEVEL));
 	}
 
-	public function init($db,$config)
+	public function init($db,$config,$tpl)
 	{
+		$this->tpl = $tpl;
 		$this->db = $db;
 		$this->config = $config;
         $this->checkForceHttps($config);
@@ -477,9 +469,7 @@ class Dase_Request
 		}
 	}
 
-	/** this function authenticates Basic HTTP
-	 *  and returns EID
-	 */
+	/** this function authenticates Basic HTTP and returns EID */
 
 	private function _authenticate($check_db=false)
 	{

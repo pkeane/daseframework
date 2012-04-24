@@ -1,6 +1,6 @@
-{extends file="framework/bootstrap.tpl"}
+{% extends "framework/bootstrap.tpl" %}
 
-{block name="content"}
+{% block content %}
 <div>
 	<div class="controls">
 		<a href="items">view items</a> |
@@ -21,4 +21,4 @@
 		</p>
 	</form>
 </div>
-{/block}
+{% endblock %}

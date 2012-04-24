@@ -96,7 +96,7 @@ class Dase_ModuleHandler_Uteid extends Dase_Handler
 
 		$logout_url = $r->app_root . '/login/form';
 		$json = Dase_Json::get(array('location' => $logout_url));
-		$r->response_mime_type = 'application/json';
+		$r->mime = 'application/json';
 		$r->renderResponse($json);
 	}
 

@@ -16,12 +16,12 @@ class Dase_DBO_Autogen_ItemsetItem extends Dase_DBO
 		parent::__construct($db,'itemset_item', array('itemset_id','item_id','created','sort_order'));
 		if ($assoc) {
 			foreach ( $assoc as $key => $value) {
-				$this->$key = $value;
+				$this->fields[$key] = $value;
 			}
 		}
 	}
-    public function getItemset_id() { return $this->itemset_id; }
-    public function getItem_id() { return $this->item_id; }
-    public function getCreated() { return $this->created; }
-    public function getSort_order() { return $this->sort_order; }
+    public function getItemset_id() { return $this->fields["itemset_id"]; }
+    public function getItem_id() { return $this->fields["item_id"]; }
+    public function getCreated() { return $this->fields["created"]; }
+    public function getSort_order() { return $this->fields["sort_order"]; }
 }

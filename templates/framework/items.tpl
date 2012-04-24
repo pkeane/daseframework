@@ -1,6 +1,6 @@
-{extends file="framework/bootstrap.tpl"}
+{% extends "framework/bootstrap.tpl" %}
 
-{block name="content"}
+{% block content %}
 
 <div class="controls">
 	view items |
@@ -10,7 +10,7 @@
 </div>
 <h3>Items</h3>
 <form action="items" method="get">
-	<input type="text" name="filter" value="{$filter}">
+	<input type="text" name="filter" value="{{ filter }}">
 	<input type="submit" value="filter list">
 </form>
 <form action="admin/set" method="post">
@@ -20,52 +20,52 @@
 		<th></th>
 		<!--
 		<th>name</th>
-		-->
+		-.
 		<th>title</th>
 		<th>created</th>
 		<th>created by</th>
 		<!--
 		<th>file</th>
-		-->
+		-.
 		<th>edit</th>
 		<th>json</th>
 	</tr>
-	{foreach name=foo item=item from=$items}
+	{foreach name=foo item=item from=$items }}
 	<tr>
 		<td>
-			<input type="checkbox" name="item[]" value="{$item->id}">
-			<span class="num">{$smarty.foreach.foo.iteration}.</span>
+			<input type="checkbox" name="item[]" value="{{ item.id }}">
+			<span class="num">{{ smarty.foreach.foo.iteration }}.</span>
 		</td>
 		<td class="thumb">
-			<a href="item/{$item->id}"><img src="{$item->thumbnail_url}"></a>
+			<a href="item/{{ item.id }}"><img src="{{ item.thumbnail_url }}"></a>
 		</td>
 		<!--
 		<td>
-			{$item->name}
+			{{ item.name }}
 		</td>
-		-->
+		-.
 		<td>
-			{$item->title}
-		</td>
-		<td>
-			{$item->created|date_format:'%D'}
+			{{ item.title }}
 		</td>
 		<td>
-			{$item->created_by}
+			{{ item.created|date("Y-m-d") }}
+		</td>
+		<td>
+			{{ item.created_by }}
 		</td>
 		<!--
 		<td>
-			<a href="{$item->file_url}">{$item->file_url}</a>
+			<a href="{{ item.file_url }}">{{ item.file_url }}</a>
 		</td>
-		-->
+		-.
 		<td>
-			<a href="item/{$item->id}/edit">edit</a>
+			<a href="item/{{ item.id }}/edit">edit</a>
 		</td>
 		<td>
-			<a href="{$item->url}.json">json</a>
+			<a href="{{ item.url }}.json">json</a>
 		</td>
 	</tr>
-	{/foreach}
+	{/foreach }}
 </table>
 <div id="toggle_check" class="toggle_check">
 <a href="#">check/uncheck all</a>
@@ -75,12 +75,12 @@
 </div>
 	<select name="set_id">
 		<option value="">add checked items to set:</option>
-		{foreach item=s from=$sets}
-		<option value="{$s->id}">{$s->title}</option>
-		{/foreach}
+		{foreach item=s from=$sets }}
+		<option value="{{ s.id }}">{{ s.title }}</option>
+		{/foreach }}
 	</select>
 	<input type="submit" value="add all">
 </form>
 
 
-{/block}
+{% endblock %}

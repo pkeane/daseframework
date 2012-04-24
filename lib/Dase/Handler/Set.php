@@ -13,6 +13,13 @@ class Dase_Handler_Set extends Dase_Handler
 
 		protected function setup($r)
 		{
+            $this->t = new Dase_Template($r);
+            $this->user = $r->getUser();
+            if ($this->user->is_admin) {
+                //ok
+            } else {
+                $r->renderError(401);
+            }
 		}
 
 		public function postToOrder($r)
@@ -40,8 +47,7 @@ class Dase_Handler_Set extends Dase_Handler
 
 		public function getForm($r) 
 		{
-				$t = new Dase_Template($r);
-				$r->renderResponse($t->fetch('framework/set_form.tpl'));
+				$r->renderResponse($this->t->fetch('framework/set_form.tpl'));
 		}
 
 		public function postToEditForm($r) 
@@ -61,14 +67,13 @@ class Dase_Handler_Set extends Dase_Handler
 
 		public function getEditForm($r) 
 		{
-				$t = new Dase_Template($r);
 				$set = new Dase_DBO_Itemset($this->db);
 				if (!$set->load($r->get('id'))) {
 						$r->renderRedirect('set/list');
 						//$r->renderError(404);
 				}
-				$t->assign('set',$set);
-				$r->renderResponse($t->fetch('framework/set_edit.tpl'));
+				$this->t->assign('set',$set);
+				$r->renderResponse($this->t->fetch('framework/set_edit.tpl'));
 		}
 
 		public function deleteSet($r)
@@ -99,22 +104,20 @@ class Dase_Handler_Set extends Dase_Handler
 
 		public function getList($r) 
 		{
-				$t = new Dase_Template($r);
 				$sets = new Dase_DBO_Itemset($this->db);
 				$sets->orderBy('created DESC');
-				$t->assign('sets',$sets->findAll(1));
-				$r->renderResponse($t->fetch('framework/sets.tpl'));
+				$this->t->assign('sets',$sets->findAll(1));
+				$r->renderResponse($this->t->fetch('framework/sets.tpl'));
 		}
 
 		public function getSet($r) 
 		{
-				$t = new Dase_Template($r);
 				$set = new Dase_DBO_Itemset($this->db);
 				$set->name = $r->get('name');
 				if ($set->findOne()) {
 						$set->getItems();
-						$t->assign('set',$set);
-						$r->renderResponse($t->fetch('framework/set.tpl'));
+						$this->t->assign('set',$set);
+						$r->renderResponse($this->t->fetch('framework/set.tpl'));
 				} else {
 						$r->renderError(404);
 				}
