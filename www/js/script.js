@@ -70,7 +70,7 @@ Dase.initFormDelete = function() {
 };
 
 Dase.initDelete = function(id) {
-	$('#'+id).find("a[class='delete']").click(function() {
+	$('#'+id).find("a.delete").click(function() {
 		if (confirm('are you sure?')) {
 			var del_o = {
 				'url': $(this).attr('href'),

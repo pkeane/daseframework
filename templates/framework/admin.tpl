@@ -12,7 +12,6 @@
 		<li><h2>View</h2></li>
 		<li><a href="items">view items</a></li>
 		<li><a href="set/list">view sets</a></li>
-		<li><a href="admin/cats">cats</a></li>
 		<li><h2>Create</h2></li>
 		<li><a href="admin/create">create content</a></li>
 		<li><a href="set/form">create a set</a></li>

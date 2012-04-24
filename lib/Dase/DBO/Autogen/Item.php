@@ -13,7 +13,7 @@ class Dase_DBO_Autogen_Item extends Dase_DBO
 {
 	public function __construct($db,$assoc = false) 
 	{
-		parent::__construct($db,'item', array('name','title','body','url','file_url','thumbnail_url','filesize','mime','width','height','meta1','meta2','meta3','created','created_by','updated','updated_by'));
+		parent::__construct($db,'item', array('name','title','body','url','file_url','thumbnail_url','filesize','mime','width','height','created','created_by','updated','updated_by'));
 		if ($assoc) {
 			foreach ( $assoc as $key => $value) {
 				$this->fields[$key] = $value;
@@ -30,9 +30,6 @@ class Dase_DBO_Autogen_Item extends Dase_DBO
     public function getMime() { return $this->fields["mime"]; }
     public function getWidth() { return $this->fields["width"]; }
     public function getHeight() { return $this->fields["height"]; }
-    public function getMeta1() { return $this->fields["meta1"]; }
-    public function getMeta2() { return $this->fields["meta2"]; }
-    public function getMeta3() { return $this->fields["meta3"]; }
     public function getCreated() { return $this->fields["created"]; }
     public function getCreated_by() { return $this->fields["created_by"]; }
     public function getUpdated() { return $this->fields["updated"]; }

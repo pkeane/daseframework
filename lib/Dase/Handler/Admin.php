@@ -9,7 +9,6 @@ class Dase_Handler_Admin extends Dase_Handler
 				'add_user_form/{eid}' => 'add_user_form',
 				'user/{id}/is_admin' => 'is_admin',
 				'create' => 'content_form',
-				'cats' => 'cats',
 		);
 
 		protected function setup($r)
@@ -22,64 +21,8 @@ class Dase_Handler_Admin extends Dase_Handler
             }
 		}
 
-		/* 
-		 * for adding multiple items to a set
-		 */
-		public function postToSet($r) 
-		{
-				$set = new Dase_DBO_Itemset($this->db);
-				if (!$set->load($r->get('set_id'))) {
-						$r->renderError(404);
-				} 
-				foreach ($r->get('item',true) as $item_id) {
-						$isi = new Dase_DBO_ItemsetItem($this->db);
-						$isi->item_id = $item_id;
-						$isi->itemset_id = $set->id;
-						$isi->created = date(DATE_ATOM);
-						$isi->insert();
-				}
-				$r->renderRedirect('set/'.$set->name);
-		}
-
-		public function getCats($r)
-		{
-				$item = Dase_DBO_Item::getByTitle($this->db,$r,'Cats');
-				if (!$item) {
-						$user = $pass = '';
-						foreach($r->getSuperusers() as $eid => $pass) {
-								$user = $eid;
-								$pass = $pass;
-								break;
-						}
-						$image_url = $r->app_root.'/www/img/cats.jpg';
-						$body = file_get_contents($image_url);
-						$post_url = $r->app_root.'/items';
-						$ch = curl_init();
-						curl_setopt($ch, CURLOPT_URL, $post_url);
-						curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-						curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-						curl_setopt($ch, CURLOPT_USERPWD,$user.':'.$pass);
-						curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false);
-						$headers  = array("Content-Type: image/jpeg","Title: Cats");
-						curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-						$result = curl_exec($ch);
-						$info = curl_getinfo($ch);
-						curl_close($ch);  
-						$r->renderRedirect('admin/cats');
-				} else {
-						$r->assign('item',$item);
-						$r->renderTemplate('framework/cats.tpl');
-				}
-		}
-
 		public function getContentForm($r) 
 		{
-				/*
-				$items = new Dase_DBO_Item($this->db);
-				$items->orderBy('updated DESC');
-				$r->assign('items',$items->findAll(1));
-				 */
 				$r->renderTemplate('framework/admin_create_content.tpl');
 		}
 

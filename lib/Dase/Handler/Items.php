@@ -8,6 +8,12 @@ class Dase_Handler_Items extends Dase_Handler
 
 		protected function setup($r)
 		{
+            $this->user = $r->getUser();
+            if ($this->user->is_admin) {
+                //ok
+            } else {
+                $r->renderError(401);
+            }
 		}
 
 		public function getItems($r) 
@@ -29,10 +35,7 @@ class Dase_Handler_Items extends Dase_Handler
 										if (
 												false !== strpos($item->name,$filter) ||
 												false !== strpos($item->title,$filter) ||
-												false !== strpos($item->body,$filter) ||
-												false !== strpos($item->meta1,$filter) ||
-												false !== strpos($item->meta1,$filter) ||
-												false !== strpos($item->meta3,$filter)
+												false !== strpos($item->body,$filter) 
 										) {
 												$result[] = $item;
 										}

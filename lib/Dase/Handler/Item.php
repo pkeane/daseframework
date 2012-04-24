@@ -63,11 +63,6 @@ class Dase_Handler_Item extends Dase_Handler
 						$r->assign('item',$item);
 						$sets = Dase_DBO_Itemset::getList($this->db);
 						$r->assign('sets',$sets);
-						$r->renderTemplate('framework/item.tpl');
-				} else {
-						$r->renderRedirect('items');
-						//$r->renderError(404);
-				}
 		}
 
 		public function getItemJson($r) 
@@ -112,9 +107,6 @@ class Dase_Handler_Item extends Dase_Handler
 						$r->renderError(401);
 				}
 				$item->title = $r->get('title');
-				$item->meta1 = $r->get('meta1');
-				$item->meta2 = $r->get('meta2');
-				$item->meta3 = $r->get('meta3');
 				$item->body = $r->get('body');
 				$item->updated_by = $this->user->eid;
 				$item->updated = date(DATE_ATOM);
