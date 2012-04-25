@@ -8,43 +8,46 @@
         <a href="items">view items</a>
     </div>
     <h1>Item {{ item.name }}</h1>
-    <dl id="item">
-        <dt>title</dt>
-        <dd>{{ item.title }}</dd>
-        <dt>name</dt>
-        <dd>{{ item.name }}</dd>
-        <dt>body</dt>
-        <dd>{{ item.body }}</dd>
-        {% if item.file_url %}
-        <dt>thumbnail</dt>
-        <dd><img src="{{ item.thumbnail_url }}"></dd>
-        <dt>file</dt>
-        <dd><a href="{{ item.file_url }}">{{ item.file_url }}</a></dd>
-        <dt>file mime type</dt>
-        <dd>{{ item.mime }}</dd>
-        <dt>file size</dt>
-        <dd>{{ item.filesize }}</dd>
-        {% endif %}
-        {% if item.width %}
-        <dt>width</dt>
-        <dd>{{ item.width }}</dd>
-        {% endif %}
-        {% if item.height %}
-        <dt>height</dt>
-        <dd>{{ item.height }}</dd>
-        {% endif %}
+    <div class="well container">
+        <table class="span6 table table-striped table-bordered table-condensed"><tbody>
+                <tr>
+                    <tr><th scope="row">title</th>
+                        <td>{{ item.title }}</td></tr>
+                    <tr><th scope="row">name</th>
+                        <td>{{ item.name }}</td></tr>
+                    <tr><th scope="row">body</th>
+                        <td>{{ item.body }}</td></tr>
+                    {% if item.file_url %}
+                    <tr><th scope="row">thumbnail</th>
+                        <td><img src="{{ item.thumbnail_url }}"></td></tr>
+                    <tr><th scope="row">file</th>
+                        <td><a href="{{ item.file_url }}">{{ item.file_url }}</a></td></tr>
+                    <tr><th scope="row">file mime type</th>
+                        <td>{{ item.mime }}</td></tr>
+                    <tr><th scope="row">file size</th>
+                        <td>{{ item.filesize }}</td></tr>
+                    {% endif %}
+                    {% if item.width %}
+                    <tr><th scope="row">width</th>
+                        <td>{{ item.width }}</td></tr>
+                    {% endif %}
+                    {% if item.height %}
+                    <tr><th scope="row">height</th>
+                        <td>{{ item.height }}</td></tr>
+                    {% endif %}
 
-        <dt>created</dt>
-        <dd>{{ item.created|date("D") }}</d>
-        <dt>created by</dt>
-        <dd>{{ item.created_by }}</d>
-        <dt>updated</dt>
-        <dd>{{ item.updated|date("D") }}</d>
-        <dt>updated by</dt>
-        <dd>{{ item.updated_by }}</d>
+                    <tr><th scope="row">created</th>
+                        <td>{{ item.created|date("Y-m-d") }}</td></tr>
+                    <tr><th scope="row">created by</th>
+                        <td>{{ item.created_by }}</td></tr>
+                    <tr><th scope="row">updated</th>
+                        <td>{{ item.updated|date("Y-m-d") }}</td></tr>
+                    <tr><th scope="row">updated by</th>
+                        <td>{{ item.updated_by }}</td></tr>
 
-        </dd>
-    </dl>
+            </td></tr>
+        </table>
+    </div>
 </div>
 
 {% endblock %}

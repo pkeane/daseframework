@@ -27,7 +27,7 @@ class Dase_Handler_Content extends Dase_Handler
 		{
 				$item = new Dase_DBO_Item($this->db);
 				if (!$item->load($r->get('id'))) {
-						$r->renderRedirect('items');
+						$r->renderRedirect('content/items');
 						//$r->renderError(404);
 				}
 				$r->assign('item',$item);
@@ -64,16 +64,11 @@ class Dase_Handler_Content extends Dase_Handler
 				if (($this->user->eid != $item->created_by) && !$this->user->is_admin) {
 						$r->renderError(401);
 				}
-
-				if ($item->file_url) {
-						$base_dir = $this->config->getMediaDir();
-						$file_path = $base_dir.'/'.$item->name;
-						@unlink($file_path);
-				}
-
-				$item->removeFromSets();
-				$item->delete();
-				$r->renderResponse('deleted item');
+                if ($item->expunge()) {
+                    $r->renderResponse('deleted item');
+                } else {
+                    $r->renderError(400);
+                }
 		}
 
 		public function postToItemEditForm($r)
@@ -103,11 +98,11 @@ class Dase_Handler_Content extends Dase_Handler
 						$r->renderError(401);
 				}
 				//@unlink($old_path);
-				$file = $r->_files['uploaded_file'];
-				if ($file && is_file($file['tmp_name'])) {
-						$name = $file['name'];
-						$path = $file['tmp_name'];
-						$type = $file['type'];
+				$file = $r->getFile('uploaded_file');
+				if ($file && $file->isValid()) {
+						$name = $file->getClientOriginalName();
+						$path = $file->getPathName();
+						$type = $file->getMimeType();
 						if (!is_uploaded_file($path)) {
 								$r->renderError(400,'no go upload');
 						}
@@ -138,7 +133,7 @@ class Dase_Handler_Content extends Dase_Handler
 								$ext = 'docx';
 						}
 
-						$newname = $this->_findNextUnique($base_dir,$basename,$ext);
+						$newname = Dase_File::findNextUnique($base_dir,$basename,$ext);
 						$new_path = $base_dir.'/'.$newname;
 						//move file to new home
 						rename($path,$new_path);
@@ -153,7 +148,7 @@ class Dase_Handler_Content extends Dase_Handler
 						if (!$item->title) {
 								$item->title = $item->name;
 						}
-						$item->file_url = 'file/'.$newname;
+						$item->file_url = 'content/file/'.$newname;
 						$item->filesize = filesize($new_path);
 						$item->mime = $type;
 
@@ -169,7 +164,7 @@ class Dase_Handler_Content extends Dase_Handler
 								}
 								chmod($thumb_path,0775);
 								$newname = str_replace('.'.$ext,'.jpg',$newname);
-								$item->thumbnail_url = 'file/thumb/'.$newname;
+								$item->thumbnail_url = 'content/file/thumb/'.$newname;
 						} else {
 								$item->thumbnail_url = 	'www/img/mime_icons/'.Dase_File::$types_map[$type]['size'].'.png';
 						}
@@ -236,89 +231,19 @@ class Dase_Handler_Content extends Dase_Handler
 				$item->title = $r->get('title');
 
 				$file = $r->getFile('uploaded_file');
-				if ($file && $file->isValid()) {
-						$name = $file->getClientOriginalName();
-						$path = $file->getPathName();
-						$type = $file->getMimeType();
-						if (!is_uploaded_file($path)) {
-								$r->renderError(400,'no go upload');
-						}
-						if (!isset(Dase_File::$types_map[$type])) {
-								$r->renderError(415,'unsupported media type: '.$type);
-						}
-
-						$base_dir = $this->config->getMediaDir();
-						$thumb_dir = $this->config->getMediaDir().'/thumb';
-
-						if (!file_exists($base_dir) || !is_writeable($base_dir)) {
-								$r->renderError(403,'media directory not writeable: '.$base_dir);
-						}
-
-						if (!file_exists($thumb_dir) || !is_writeable($thumb_dir)) {
-								$r->renderError(403,'thumbnail directory not writeable: '.$thumb_dir);
-						}
-
-						$ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-						$basename = Dase_Util::dirify(pathinfo($name,PATHINFO_FILENAME));
-
-						if ('application/pdf' == $type) {
-								$ext = 'pdf';
-						}
-						if ('application/msword' == $type) {
-								$ext = 'doc';
-						}
-						if ('application/vnd.openxmlformats-officedocument.wordprocessingml.document' == $type) {
-								$ext = 'docx';
-						}
-
-						$newname = $this->_findNextUnique($base_dir,$basename,$ext);
-						$new_path = $base_dir.'/'.$newname;
-						//move file to new home
-						rename($path,$new_path);
-						chmod($new_path,0775);
-						$size = @getimagesize($new_path);
-
-						$item->name = $newname;
-						if (!$item->title) {
-								$item->title = $item->name;
-						}
-						$item->file_url = 'content/file/'.$item->name;
-						$item->filesize = filesize($new_path);
-						$item->mime = $type;
-
-						$parts = explode('/',$type);
-						if (isset($parts[0]) && 'image' == $parts[0]) {
-								$thumb_path = $thumb_dir.'/'.$newname;
-								$thumb_path = str_replace('.'.$ext,'.jpg',$thumb_path);
-								$command = CONVERT." \"$new_path\" -format jpeg -resize '100x100 >' -colorspace RGB $thumb_path";
-								$exec_output = array();
-								$results = exec($command,$exec_output);
-								if (!file_exists($thumb_path)) {
-										//Dase_Log::info(LOG_FILE,"failed to write $thumb_path");
-								}
-								chmod($thumb_path,0775);
-								$newname = str_replace('.'.$ext,'.jpg',$newname);
-								$item->thumbnail_url = 'content/file/thumb/'.$newname;
-						} else {
-								$item->thumbnail_url = 	'www/img/mime_icons/'.Dase_File::$types_map[$type]['size'].'.png';
-						}
-						if (isset($size[0]) && $size[0]) {
-								$item->width = $size[0];
-						}
-						if (isset($size[1]) && $size[1]) {
-								$item->height = $size[1];
-						}
-				} else {
-						if (!$item->title) {
-								$item->title = substr($item->body,0,20);
-						}
-						if (!$item->title) {
-								$params['msg'] = "title or body is required is no file is uploaded";
-								$r->renderRedirect('content',$params);
-						}
-						$item->name = $this->_findUniqueName(Dase_Util::dirify($item->title));
-						$item->thumbnail_url = 	'www/img/mime_icons/content.png';
-				}
+                if ($file && $file->isValid()) {
+                    $item->processUploadedFile($file);
+                } else {
+                    if (!$item->title) {
+                        $item->title = substr($item->body,0,20);
+                    }
+                    if (!$item->title) {
+                        $params['msg'] = "title or body is required if no file is uploaded";
+                        $r->renderRedirect('content',$params);
+                    }
+                    $item->name = Dase_DBO_Item:findUniqueName(Dase_Util::dirify($item->title));
+                    $item->thumbnail_url = 	'www/img/mime_icons/content.png';
+                }
 				$item->created_by = $this->user->eid;
 				$item->created = date(DATE_ATOM);
 				$item->updated_by = $this->user->eid;
@@ -358,12 +283,9 @@ class Dase_Handler_Content extends Dase_Handler
 				if (!Dase_Media::isAcceptable($content_type)) {
 						$r->renderError(415,'cannot accept '.$content_type);
 				}
-
 				$bits = $r->getBody();
-
 				$file_meta = Dase_File::$types_map[$content_type];
 				$ext = $file_meta['ext'];
-
 				$title = '';
 				if ( $r->http_title ) {
 						$title = $r->http_title;
@@ -373,10 +295,9 @@ class Dase_Handler_Content extends Dase_Handler
 						$title = dechex(time());
 				}
 				$base_dir = $this->config->getMediaDir();
-				$basename = $this->_findUniqueName(Dase_Util::dirify($title));
-				$newname = $this->_findNextUnique($base_dir,$basename,$ext);
+				$basename = Dase_DBO_Item::findUniqueName(Dase_Util::dirify($title));
+				$newname = Dase_File::findNextUnique($base_dir,$basename,$ext);
 				$new_path = $base_dir.'/'.$newname;
-
 				$ifp = @ fopen( $new_path, 'wb' );
 				if (!$ifp) {
 						Dase_Log::debug(LOG_FILE,'cannot write file '.$new_path);
@@ -464,7 +385,7 @@ class Dase_Handler_Content extends Dase_Handler
 						$mime_type = Dase_Request::$types[$ext];
 						$base_dir = $this->config->getMediaDir();
 						$basename = Dase_Util::dirify(pathinfo($file_url,PATHINFO_FILENAME));
-						$newname = $this->_findNextUnique($base_dir,$basename,$ext);
+						$newname = Dase_File::findNextUnique($base_dir,$basename,$ext);
 						$new_path = $base_dir.'/'.$newname;
 						//move file to new home
 						file_put_contents($new_path,file_get_contents($file_url));
@@ -518,40 +439,6 @@ class Dase_Handler_Content extends Dase_Handler
 						$r->renderError(400);
 				}
 		}
-
-		private function _findNextUnique($base_dir,$basename,$ext,$iter=0)
-		{
-				if ($iter) {
-						$checkname = $basename.'_'.$iter.'.'.$ext;
-				} else {
-						$checkname = $basename.'.'.$ext;
-				}
-				if (!file_exists($base_dir.'/'.$checkname)) {
-						return $checkname;
-				} else {
-						$iter++;
-						return $this->_findNextUnique($base_dir,$basename,$ext,$iter);
-				}
-
-		}
-
-		private function _findUniqueName($name,$iter=0)
-		{
-				if ($iter) {
-						$checkname = $name.'_'.$iter;
-				} else {
-						$checkname = $name;
-				}
-				$item = new Dase_DBO_Item($this->db);
-				$item->name = $checkname;
-				if (!$item->findOne()) {
-						return $checkname;
-				} else {
-						$iter++;
-						return $this->_findUniqueName($name,$iter);
-				}
-		}
-
 
 }
 

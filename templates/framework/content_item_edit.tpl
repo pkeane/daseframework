@@ -21,7 +21,7 @@
 	{% else %}
 	<h1>Add a File</h1>
 	{% endif %}
-	<form action="item/{{ item.id }}/swap" method="post" enctype="multipart/form-data">
+	<form action="content/item/{{ item.id }}/swap" method="post" enctype="multipart/form-data">
 		<p>
 		<label for="uploaded_file">select a file</label>
 		<input type="file" name="uploaded_file"/>
@@ -36,11 +36,8 @@
 	<img src="{{ item.thumbnail_url }}">
 	{% endif %}
 </div>
-	<div class="controls">
-		<form action="item/{{ item.id }}" method="delete">
-			<input type="submit" value="delete item">
-		</form>
-	</div>
-	<div class="clear"></div>
+<form action="content/item/{{ item.id }}" method="delete">
+    <input type="submit" value="delete item">
+</form>
 
 {% endblock %}

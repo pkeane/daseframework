@@ -309,4 +309,19 @@ abstract class Dase_File
 		$this->log->info("created $media_file->size $media_file->filename");
 	}
 
+    public static function findNextUnique($base_dir,$basename,$ext,$iter=0)
+    {
+        if ($iter) {
+            $checkname = $basename.'_'.$iter.'.'.$ext;
+        } else {
+            $checkname = $basename.'.'.$ext;
+        }
+        if (!file_exists($base_dir.'/'.$checkname)) {
+            return $checkname;
+        } else {
+            $iter++;
+            return Dase_File::findNextUnique($base_dir,$basename,$ext,$iter);
+        }
+    }
+
 }
