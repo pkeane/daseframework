@@ -28,7 +28,7 @@
 			<input type="checkbox" name="item[]" value="{{ item.id }}">
 		</td>
 		<td class="thumb">
-			<a href="item/{{ item.id }}"><img src="{{ item.thumbnail_url }}"></a>
+			<a href="content/item/{{ item.id }}"><img src="{{ item.thumbnail_url }}"></a>
 		</td>
 		<td>
 			{{ item.name }}
