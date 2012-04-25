@@ -8,3 +8,9 @@ body {
 	text-align: center;
 }
 
+dl.fix dt {
+    min-height: 18px;
+}
+dl.fix dd {
+    min-height: 18px;
+}

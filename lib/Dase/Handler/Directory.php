@@ -1,15 +1,5 @@
 <?php
 
-function sortByName($a,$b)
-{
-	$a_str = strtolower($a['name']);
-	$b_str = strtolower($b['name']);
-	if ($a_str == $b_str) {
-		return 0;
-	}
-	return ($a_str < $b_str) ? -1 : 1;
-}
-
 
 class Dase_Handler_Directory extends Dase_Handler
 {
@@ -22,15 +12,5 @@ class Dase_Handler_Directory extends Dase_Handler
 		$this->user = $r->getUser();
 	}
 
-	public function getSearchForm($r) 
-	{
-		if ($r->get('lastname')) {
-			$results = Utlookup::lookup($r->get('lastname'),'sn');
-			usort($results,'sortByName');
-			$r->assign('lastname',$r->get('lastname'));
-			$r->assign('results',$results);
-		}
-		$r->renderTemplate('framework/directory.tpl');
-	}
 }
 

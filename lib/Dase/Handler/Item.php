@@ -63,6 +63,7 @@ class Dase_Handler_Item extends Dase_Handler
 						$r->assign('item',$item);
 						$sets = Dase_DBO_Itemset::getList($this->db);
 						$r->assign('sets',$sets);
+                }
 		}
 
 		public function getItemJson($r) 

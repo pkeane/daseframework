@@ -147,7 +147,7 @@ Dase.initSortableTable = function(id) {
 
 Dase.initUserPrivs = function() {
 	$('#user_privs').find('a').click( function() {
-		var method = $(this).attr('class');
+		var method = $(this).attr('data-method');
 		var url = $(this).attr('href');
 		var _o = {
 			'url': url,

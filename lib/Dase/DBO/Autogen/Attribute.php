@@ -9,11 +9,11 @@ require_once 'Dase/DBO.php';
  * 
  */
 
-class Dase_DBO_Autogen_Itemset extends Dase_DBO 
+class Dase_DBO_Autogen_Attribute extends Dase_DBO 
 {
 	public function __construct($db,$assoc = false) 
 	{
-		parent::__construct($db,'itemset', array('name','title','created','created_by'));
+		parent::__construct($db,'attribute', array('name','ascii_id','created','created_by'));
 		if ($assoc) {
 			foreach ( $assoc as $key => $value) {
 				$this->fields[$key] = $value;
@@ -21,7 +21,7 @@ class Dase_DBO_Autogen_Itemset extends Dase_DBO
 		}
 	}
     public function getName() { return $this->fields["name"]; }
-    public function getTitle() { return $this->fields["title"]; }
+    public function getAscii_id() { return $this->fields["ascii_id"]; }
     public function getCreated() { return $this->fields["created"]; }
     public function getCreated_by() { return $this->fields["created_by"]; }
 }

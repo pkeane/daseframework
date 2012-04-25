@@ -1,10 +1,22 @@
 <?php
 
+function sortByName($a,$b)
+{
+	$a_str = strtolower($a['name']);
+	$b_str = strtolower($b['name']);
+	if ($a_str == $b_str) {
+		return 0;
+	}
+	return ($a_str < $b_str) ? -1 : 1;
+}
+
 class Dase_Handler_Admin extends Dase_Handler
 {
 		public $resource_map = array(
 				'/' => 'admin',
 				'set' => 'set',
+				'user/email' => 'user_email',
+				'directory' => 'directory',
 				'users' => 'users',
 				'add_user_form/{eid}' => 'add_user_form',
 				'user/{id}/is_admin' => 'is_admin',
@@ -21,6 +33,24 @@ class Dase_Handler_Admin extends Dase_Handler
             }
 		}
 
+        public function getDirectory($r) 
+        {
+            if ($r->get('lastname')) {
+                $results = Utlookup::lookup($r->get('lastname'),'sn');
+                usort($results,'sortByName');
+                $r->assign('lastname',$r->get('lastname'));
+                $r->assign('results',$results);
+            }
+            $r->renderTemplate('framework/admin_directory.tpl');
+        }
+
+        public function postToUserEmail($r)
+        {
+            $this->user->email = $r->get('email');
+            $this->user->update();
+            $r->renderRedirect('admin');
+        }
+
 		public function getContentForm($r) 
 		{
 				$r->renderTemplate('framework/admin_create_content.tpl');
@@ -32,11 +62,11 @@ class Dase_Handler_Admin extends Dase_Handler
 				$item->body = $r->get('body');
 				$item->title = $r->get('title');
 
-				$file = $r->_files['uploaded_file'];
-				if ($file && is_file($file['tmp_name'])) {
-						$name = $file['name'];
-						$path = $file['tmp_name'];
-						$type = $file['type'];
+				$file = $r->getFile('uploaded_file');
+				if ($file && $file->isValid()) {
+						$name = $file->getClientOriginalName();
+						$path = $file->getPathName();
+						$type = $file->getMimeType();
 						if (!is_uploaded_file($path)) {
 								$r->renderError(400,'no go upload');
 						}
@@ -148,7 +178,7 @@ class Dase_Handler_Admin extends Dase_Handler
 						$r->tpl->assign('user',$u);
 				}
 				$r->assign('record',$record);
-				$r->renderTemplate('framework/add_user_form.tpl');
+				$r->renderTemplate('framework/admin_add_user.tpl');
 		}
 
 		public function postToUsers($r)
@@ -163,7 +193,7 @@ class Dase_Handler_Admin extends Dase_Handler
 				} else {
 						//$user->update();
 				}
-				$r->renderRedirect('admin');
+				$r->renderRedirect('admin/users');
 
 		}
 

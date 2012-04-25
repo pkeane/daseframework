@@ -21,32 +21,7 @@ class Dase_Handler_Items extends Dase_Handler
 				$items = new Dase_DBO_Item($this->db);
 				$items->orderBy('updated DESC');
 				$items = $items->findAll(1);
-				$result = array();
-				if ($r->get('filter')) {
-						$filter = $r->get('filter');
-						$r->assign('filter',$filter);
-						$parts = explode(':',$filter);
-						//grab slice w/ format like 4:22
-						if (2 == count($parts) && is_int((int) $parts[0]) && is_int((int)$parts[1])) {
-								$result = array_slice($items,$parts[0]-1,$parts[1]-$parts[0]+1);
-								$r->assign('filter','');
-						} else {
-								foreach($items as $item) {
-										if (
-												false !== strpos($item->name,$filter) ||
-												false !== strpos($item->title,$filter) ||
-												false !== strpos($item->body,$filter) 
-										) {
-												$result[] = $item;
-										}
-								}
-						}
-				} else {
-						$result = $items;
-				}
-				$sets = Dase_DBO_Itemset::getList($this->db);
-				$r->assign('sets',$sets);
-				$r->assign('items',$result);
+				$r->assign('items',$items);
 				$r->renderTemplate('framework/items.tpl');
 		}
 

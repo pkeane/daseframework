@@ -124,6 +124,21 @@ class Dase_Request
         return false;
     }
 
+    public function hasFile($key)
+    {
+        if ($this->sf_request->files->has($key)) {
+            return true;
+        }
+        return false;
+    }
+
+    public function getFile($key)
+    {
+        if ($this->sf_request->files->has($key)) {
+            return $this->sf_request->files->get($key);
+        }
+    }
+
     //todo: work on returning arrays when appropriate
     public function get($key)
     {

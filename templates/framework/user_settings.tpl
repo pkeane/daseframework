@@ -3,7 +3,7 @@
 {% block content %}
 <div>
 	<h1>User Settings for {{ request.user.name }}</h1>
-	<dl class="dl-horizontal">
+	<dl class="dl-horizontal fix">
 		<dt>name</dt>
 		<dd>{{ request.user.name }}</dd>
 		<dt>eid</dt>
