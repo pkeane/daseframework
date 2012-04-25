@@ -13,7 +13,7 @@ class Dase_DBO_Autogen_Item extends Dase_DBO
 {
 	public function __construct($db,$assoc = false) 
 	{
-		parent::__construct($db,'item', array('name','title','body','url','file_url','thumbnail_url','filesize','mime','width','height','created','created_by','updated','updated_by'));
+		parent::__construct($db,'item', array('name','title','body','url','file_url','thumbnail_url','view_url','file_path','thumbnail_path','view_path','filesize','file_ext','mime','width','height','lat','lng','created','created_by','updated','updated_by'));
 		if ($assoc) {
 			foreach ( $assoc as $key => $value) {
 				$this->fields[$key] = $value;
@@ -26,10 +26,17 @@ class Dase_DBO_Autogen_Item extends Dase_DBO
     public function getUrl() { return $this->fields["url"]; }
     public function getFile_url() { return $this->fields["file_url"]; }
     public function getThumbnail_url() { return $this->fields["thumbnail_url"]; }
+    public function getView_url() { return $this->fields["view_url"]; }
+    public function getFile_path() { return $this->fields["file_path"]; }
+    public function getThumbnail_path() { return $this->fields["thumbnail_path"]; }
+    public function getView_path() { return $this->fields["view_path"]; }
     public function getFilesize() { return $this->fields["filesize"]; }
+    public function getFile_ext() { return $this->fields["file_ext"]; }
     public function getMime() { return $this->fields["mime"]; }
     public function getWidth() { return $this->fields["width"]; }
     public function getHeight() { return $this->fields["height"]; }
+    public function getLat() { return $this->fields["lat"]; }
+    public function getLng() { return $this->fields["lng"]; }
     public function getCreated() { return $this->fields["created"]; }
     public function getCreated_by() { return $this->fields["created_by"]; }
     public function getUpdated() { return $this->fields["updated"]; }

@@ -19,6 +19,7 @@
         <th>created</th>
         <th>created by</th>
         <th>file</th>
+        <th>view</th>
         <th>edit</th>
         <th>json</th>
     </tr>
@@ -44,6 +45,9 @@
         </td>
         <td>
             <a href="{{ item.file_url }}">{{ item.file_url }}</a>
+        </td>
+        <td>
+            <a href="{{ item.view_url }}">{{ item.view_url }}</a>
         </td>
         <td>
             <a href="content/item/{{ item.id }}/edit">edit</a>

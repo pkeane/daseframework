@@ -658,6 +658,9 @@ class Dase_Request
 	{
 		$response = new Response();
         $response->setStatusCode($code);
+        if (!$msg) {
+            $msg = Response::$statusTexts[$code];
+        }
         $response->setContent($msg);
         $response->headers->set('Content-Type','text/plain');
 		$response->send();

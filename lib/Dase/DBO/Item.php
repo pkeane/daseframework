@@ -20,15 +20,18 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
 
     public function expunge()
     {
-        if ($this->file_url) {
-            $base_dir = $this->config->getMediaDir();
-            $file_path = $base_dir.'/'.$this->name;
-            @unlink($file_path);
-        }
+        $this->deleteMedia();
         $this->deleteMetadata();
         if ($this->delete()) {
             return true;
         }
+    }
+
+    public function deleteMedia()
+    {
+        @unlink($this->file_path);
+        @unlink($this->thumbnail_path);
+        @unlink($this->view_path);
     }
 
     public function deleteMetadata()
@@ -40,102 +43,111 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         }
     }
 
+    public function deleteFiles()
+    {
+
+    }
+
     public function processUploadedFile(Symfony\Component\HttpFoundation\File\UploadedFile $file) 
     {
-        $name = $file->getClientOriginalName();
+        $orig_name = $file->getClientOriginalName();
         $path = $file->getPathName();
-        $type = $file->getMimeType();
+        $mime = $file->getMimeType();
         if (!is_uploaded_file($path)) {
             $r->renderError(400,'no go upload');
         }
-        if (!isset(Dase_File::$types_map[$type])) {
-            $r->renderError(415,'unsupported media type: '.$type);
+        if (!isset(Dase_File::$types_map[$mime])) {
+            $r->renderError(415,'unsupported media type: '.$mime);
+        }
+        $media_dir = $this->config->getMediaDir();
+        if (!file_exists($media_dir) || !is_writeable($media_dir)) {
+            $r->renderError(403,'media directory not writeable: '.$media_dir);
         }
 
-        $base_dir = $this->config->getMediaDir();
-        $thumb_dir = $this->config->getMediaDir().'/thumb';
-        $view_dir = $this->config->getMediaDir().'/view';
+        $ext = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
+        $basename = Dase_Util::dirify(pathinfo($orig_name,PATHINFO_FILENAME));
 
-        if (!file_exists($base_dir) || !is_writeable($base_dir)) {
-            $r->renderError(403,'media directory not writeable: '.$base_dir);
-        }
-
-        if (!file_exists($thumb_dir) || !is_writeable($thumb_dir)) {
-            $r->renderError(403,'thumbnail directory not writeable: '.$thumb_dir);
-        }
-
-        if (!file_exists($view_dir) || !is_writeable($view_dir)) {
-            $r->renderError(403,'view directory not writeable: '.$view_dir);
-        }
-
-        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        $basename = Dase_Util::dirify(pathinfo($name,PATHINFO_FILENAME));
-
-        if ('application/pdf' == $type) {
+        if ('application/pdf' == $mime) {
             $ext = 'pdf';
         }
-        if ('application/msword' == $type) {
+        if ('application/msword' == $mime) {
             $ext = 'doc';
         }
-        if ('application/vnd.openxmlformats-officedocument.wordprocessingml.document' == $type) {
+        if ('application/vnd.openxmlformats-officedocument.wordprocessingml.document' == $mime) {
             $ext = 'docx';
         }
 
-        $newname = Dase_File::findNextUnique($base_dir,$basename,$ext);
-        $new_path = $base_dir.'/'.$newname;
+        $name = Dase_File::findNextUnique($media_dir,$basename,$ext);
+        $file_path = $media_dir.'/'.$name;
         //move file to new home
-        rename($path,$new_path);
-        chmod($new_path,0775);
-        $size = @getimagesize($new_path);
+        rename($path,$file_path);
+        chmod($file_path,0775);
 
-        $this->name = $newname;
-        if (!$this->title) {
-            $this->title = $item->name;
+        $size = @getimagesize($file_path);
+        if (isset($size[0]) && $size[0]) { 
+            $this->width = $size[0]; 
         }
-        $this->file_url = 'content/file/'.$item->name;
-        $this->filesize = filesize($new_path);
-        $this->mime = $type;
+        if (isset($size[1]) && $size[1]) { 
+            $this->height = $size[1]; 
+        }
+        $this->name = $name;
+        $this->file_ext = $ext;
+        $this->file_path = $file_path;
+        $this->file_url = 'content/file/'.$name;
+        $this->filesize = filesize($file_path);
+        $this->mime = $mime;
 
-        $parts = explode('/',$type);
+        $this->makeDerivatives($media_dir);
+        return $name;
+    }
+
+    public function makeDerivatives($media_dir) 
+    {
+        if (!$this->name) {
+            return;
+        }
+        $thumb_dir = $media_dir.'/thumb';
+        if (!file_exists($thumb_dir) || !is_writeable($thumb_dir)) {
+            $r->renderError(403,'thumbnail directory not writeable: '.$thumb_dir);
+        }
+        $view_dir = $media_dir.'/view';
+        if (!file_exists($view_dir) || !is_writeable($view_dir)) {
+            $r->renderError(403,'view directory not writeable: '.$view_dir);
+        }
+        $parts = explode('/',$this->mime);
         if (isset($parts[0]) && 'image' == $parts[0]) {
 
             /****  make thumbnail  ****/
 
-            $thumb_path = $thumb_dir.'/'.$newname;
-            $thumb_path = str_replace('.'.$ext,'.jpg',$thumb_path);
-            $command = CONVERT." \"$new_path\" -format jpeg -resize '100x100 >' -colorspace RGB $thumb_path";
+            $thumb_name = str_replace('.'.$this->file_ext,'.jpg',$this->name);
+            $thumb_path = $thumb_dir.'/'.$thumb_name;
+            $command = CONVERT." \"$this->file_path\" -format jpeg -resize '100x100 >' -colorspace RGB $thumb_path";
             $exec_output = array();
             $results = exec($command,$exec_output);
             if (!file_exists($thumb_path)) {
                 $this->log->info("failed to write $thumb_path");
             }
             chmod($thumb_path,0775);
-            $newname = str_replace('.'.$ext,'.jpg',$newname);
-            $this->thumbnail_url = 'content/file/thumb/'.$newname;
+            $this->thumbnail_url = 'content/file/thumb/'.$thumb_name;
+            $this->thumb_path = $thumb_path;
 
             /****  make view  ****/
 
-            $view_path = $view_dir.'/'.$newname;
-            $view_path = str_replace('.'.$ext,'.jpg',$view_path);
-            $command = CONVERT." \"$new_path\" -format jpeg -resize '640x480 >' -colorspace RGB $view_path";
+            $view_name = str_replace('.'.$this->file_ext,'.jpg',$this->name);
+            $view_path = $view_dir.'/'.$view_name;
+            $command = CONVERT." \"$this->file_path\" -format jpeg -resize '640x480 >' -colorspace RGB $view_path";
             $exec_output = array();
             $results = exec($command,$exec_output);
             if (!file_exists($view_path)) {
                 $this->log->info("failed to write $view_path");
             }
             chmod($view_path,0775);
-            $newname = str_replace('.'.$ext,'.jpg',$newname);
-            $this->view_url = 'content/file/view/'.$newname;
+            $this->view_url = 'content/file/view/'.$view_name;
+            $this->view_path = $view_path;
 
         } else {
-            $this->thumbnail_url = 	'www/img/mime_icons/'.Dase_File::$types_map[$type]['size'].'.png';
-            $this->view_url = 	'www/img/mime_icons/'.Dase_File::$types_map[$type]['size'].'.png';
-        }
-        if (isset($size[0]) && $size[0]) {
-            $this->width = $size[0];
-        }
-        if (isset($size[1]) && $size[1]) {
-            $this->height = $size[1];
+            $this->thumbnail_url = 	'www/img/mime_icons/'.Dase_File::$types_map[$this->mime]['size'].'.png';
+            $this->view_url = 	'www/img/mime_icons/'.Dase_File::$types_map[$this->mime]['size'].'.png';
         }
     }
 
@@ -158,6 +170,9 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         }
         if ($this->thumbnail_url) {
             $set['links']['thumbnail'] = $r->app_root.'/'.$this->thumbnail_url;
+        }
+        if ($this->view_url) {
+            $set['links']['view'] = $r->app_root.'/'.$this->view_url;
         }
         if ($this->filesize) {
             $set['filesize'] = $this->filesize;
