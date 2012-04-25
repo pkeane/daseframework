@@ -52,22 +52,6 @@
 		<dt>updated by</dt>
 		<dd>{{ item.updated_by }}</d>
 
-		<dt>sets</dt>
-		<dd class="sets">
-		<ul class="itemsets">
-			{foreach item=set from=$item.sets }}
-			<li><a href="set/{{ set.name }}">{{ set.title }}</a></li>
-			{/foreach }}
-		</ul>
-		<form action="item/{{ item.id }}/sets" method="post">
-			<select name="set_id">
-				<option value="">add to:</option>
-				{% for s in sets %}
-				<option value="{{ s.id }}">{{ s.title }}</option>
-				{% endfor %}
-			</select>
-			<input type="submit" value="add">
-		</form>
 		</dd>
 	</dl>
 </div>

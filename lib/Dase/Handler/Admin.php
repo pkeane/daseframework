@@ -14,7 +14,6 @@ class Dase_Handler_Admin extends Dase_Handler
 {
     public $resource_map = array(
         '/' => 'admin',
-        'set' => 'set',
         'user/email' => 'user_email',
         'directory' => 'directory',
         'users' => 'users',
