@@ -29,7 +29,6 @@ class Dase_Handler_Content extends Dase_Handler
         $item = new Dase_DBO_Item($this->db);
         if (!$item->load($r->get('id'))) {
             $r->renderRedirect('content/items');
-            //$r->renderError(404);
         }
         $r->assign('item',$item);
         $r->renderTemplate('framework/content_item_edit.tpl');
@@ -83,6 +82,12 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $item->title = $r->get('title');
         $item->body = $r->get('body');
+        if ($r->has('lat')) {
+            $item->lat = $r->get('lat');
+        }
+        if ($r->has('lng')) {
+            $item->lng = $r->get('lng');
+        }
         $item->updated_by = $this->user->eid;
         $item->updated = date(DATE_ATOM);
         $item->update();

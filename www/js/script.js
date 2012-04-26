@@ -11,7 +11,14 @@ $(document).ready(function() {
 	Dase.initFormDelete();
 	Dase.initLabSelector();
 	Dase.initToggleCheck();
+    Dase.initColorbox();
 });
+
+
+Dase.initColorbox = function() {
+    $("#loclink").colorbox({iframe:true, innerWidth:800, innerHeight:500});
+};
+
 
 Dase.initToggleCheck = function() {
 	var checked = false;

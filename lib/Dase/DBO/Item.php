@@ -186,6 +186,12 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         if ($this->height) {
             $set['height'] = $this->height;
         }
+        if ($this->lat) {
+            $set['lat'] = $this->lat;
+        }
+        if ($this->lng) {
+            $set['lng'] = $this->lng;
+        }
         return $set;
     }
 
