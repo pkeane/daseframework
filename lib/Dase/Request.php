@@ -110,6 +110,11 @@ class Dase_Request
         $this->params = $params; 
     }
 
+    public function getAppSettings()
+    {
+        return $this->config->getAppSettings();
+    }
+
     public function has($key)
     {
         if ($this->sf_request->request->has($key)) {

@@ -17,6 +17,7 @@ $conf['local']['page_logo_src'] = 'www/images/myimage.jpg';
  */
 
 $conf['app']['default_handler'] = 'collections';
+$conf['app']['google_maps_api_key'] = 'google_maps_api_key_here';
 
 $conf['auth']['superuser']['myname'] = 'mypass';
 $conf['auth']['token'] = 'auth';
