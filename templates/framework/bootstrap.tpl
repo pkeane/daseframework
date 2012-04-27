@@ -29,10 +29,7 @@
         -->
         <script src="www/js/jquery.js"></script>
         <script src="www/js/jquery-ui.js"></script>
-        <!--<script src="www/js/bootstrap-modal.js"></script>-->
         <script src="www/js/jquery.colorbox.js"></script>
-        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key={{ request.appSettings.google_maps_api_key }}&sensor=false"></script>
-
         {% endblock %}
 
         {% block head %}{% endblock %}

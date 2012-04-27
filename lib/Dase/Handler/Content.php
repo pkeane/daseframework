@@ -12,6 +12,7 @@ class Dase_Handler_Content extends Dase_Handler
         'item/{name}' => 'item',
         'item/{id}/edit' => 'item_edit_form',
         'item/{id}/swap' => 'item_swap_file',
+        'item/{id}/map' => 'item_map',
     );
 
     protected function setup($r)
@@ -22,6 +23,16 @@ class Dase_Handler_Content extends Dase_Handler
         } else {
             $r->renderError(401);
         }
+    }
+
+    public function getItemMap($r)
+    {
+        $item = new Dase_DBO_Item($this->db);
+        if (!$item->load($r->get('id'))) {
+            $r->renderError(404);
+        }
+        $r->assign('item',$item);
+        $r->renderTemplate('framework/map.tpl');
     }
 
     public function getItemEditForm($r) 

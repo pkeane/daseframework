@@ -41,7 +41,7 @@
 </form>
 
 
-<a class="btn btn-mini btn-info" id="loclink" href="http://eanthro.org/labs/trackways/map/11">Add a Location</a>
+<a class="btn btn-mini btn-info" id="loclink" href="content/item/{{ item.id }}/map">Add a Location</a>
 
 
 
