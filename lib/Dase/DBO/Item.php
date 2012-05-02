@@ -7,15 +7,11 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
 
     public $sets = array();
 
-    public static function getByTitle($db,$r,$title)
+    public static function getByName($db,$name)
     {
         $item = new Dase_DBO_Item($db);
-        $item->title = $title;
-        if ($item->findOne()) {
-            return $item->asArray($r);
-        } else {
-            return false;
-        }
+        $item->name = $name;
+        return $item->findOne();
     }
 
     public function expunge()
@@ -129,7 +125,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             }
             chmod($thumb_path,0775);
             $this->thumbnail_url = 'content/file/thumb/'.$thumb_name;
-            $this->thumb_path = $thumb_path;
+            $this->thumbnail_path = $thumb_path;
 
             /****  make view  ****/
 
@@ -192,7 +188,28 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         if ($this->lng) {
             $set['lng'] = $this->lng;
         }
+        $set['metadata'] = $this->getMetadata();;
         return $set;
+    }
+
+    public function getMetadata()
+    {
+        $sql = "
+            SELECT attribute.ascii_id, value.text
+            FROM attribute,value
+            WHERE attribute.id = value.attribute_id
+            AND value.item_id = ?
+            ";
+        $sth = $this->db->getDbh()->prepare($sql);
+        $sth->execute(array($this->id));
+        $sth->setFetchMode(PDO::FETCH_ASSOC);
+        while ($row = $sth->fetch()) {
+            if (!isset($metadata[$row['ascii_id']])) {
+                $metadata[$row['ascii_id']] = array();
+            }
+            $metadata[$row['ascii_id']][] = $row['text'];
+        }
+        return $metadata;
     }
 
     public function asJson($r)
@@ -200,20 +217,20 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         return Dase_Json::get($this->asArray($r));
     }
 
-    public static function findUniqueName($name,$iter=0)
+    public static function findUniqueName($db,$name,$iter=0)
     {
         if ($iter) {
             $checkname = $name.'_'.$iter;
         } else {
             $checkname = $name;
         }
-        $item = new Dase_DBO_Item($this->db);
+        $item = new Dase_DBO_Item($db);
         $item->name = $checkname;
         if (!$item->findOne()) {
             return $checkname;
         } else {
             $iter++;
-            return Dase_DBO_Item::findUniqueName($name,$iter);
+            return Dase_DBO_Item::findUniqueName($db,$name,$iter);
         }
     }
 

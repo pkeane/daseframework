@@ -3,14 +3,14 @@
 {% block content %}
 
 <div class="row">
-    <div class="span10">&nbsp;</div>
-    <div class="span2">
-        <a href="content/create" class="btn btn-mini btm-promary">create content</a>
+    <div class="pull-right">
+        <a href="content/create" class="btn btn-primary">create content</a>
+        <a href="content/attributes" class="btn btn-primary">manage attributes</a>
     </div>
 </div>
 
 <h3>Items</h3>
-<table class="table table-bordered table-condensd table-striped" id="items">
+<table class="table table-striped" id="items">
     <tr>
         <th></th>
         <th>thumbnail</th>
@@ -50,10 +50,10 @@
             <a href="{{ item.view_url }}">{{ item.view_url }}</a>
         </td>
         <td>
-            <a href="content/item/{{ item.id }}/edit">edit</a>
+            <a href="content/item/{{ item.id }}/edit" class="btn btn-warning">edit</a>
         </td>
         <td>
-            <a href="{{ item.url }}.json">json</a>
+            <a href="{{ item.url }}.json" class="btn btn-info">json</a>
         </td>
     </tr>
     {% endfor %}
@@ -62,15 +62,16 @@
     <a href="#">check/uncheck all</a>
 </div>
 <div class="container">
-    <form class="well form-inline">
+    <form method="post" action="content/items/metadata" id="bulk_add" class="well form-inline">
+        <input type="hidden" name="items" value="|">
         <h4>Add Metadata to Checked Items</h4>
         <select name="attribute_id">
             <option value="">select an attribute:</option>
-            {foreach item=att from=$attributes }}
+            {% for att in atts %}
             <option value="{{ att.id }}">{{ att.name }}</option>
-            {/foreach }}
+            {% endfor %}
         </select>
-        <input type="text" name="value_text">
+        <span id="att_input_form"></span>
         <input type="submit" value="add metadata">
     </form>
 </div>

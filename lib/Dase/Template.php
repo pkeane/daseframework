@@ -1,5 +1,7 @@
 <?php
 
+require_once 'markdown.php';
+
 class Dase_Template {
 
     protected $twig;
@@ -40,6 +42,8 @@ class Dase_Template {
             'cache' => TEMPLATE_CACHE_DIR,
             'auto_reload' => TEMPLATE_AUTO_RELOAD,
         ));
+        $md = new Twig_Filter_Function('Markdown',array('is_safe' => array('html')));
+        $this->twig->addFilter('markdown',$md);
         return $this->twig->render($resource_name,$this->vars);
     }
 }

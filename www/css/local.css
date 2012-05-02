@@ -1,11 +1,11 @@
 body {
-	padding-top: 60px;
-	padding-bottom: 40px;
+    padding-top: 60px;
+    padding-bottom: 40px;
 }
 
 #wordmark {
-	background:url("../img/wordMarkBkg.png") repeat-x scroll center bottom #FFFFFF;
-	text-align: center;
+    background:url("../img/wordMarkBkg.png") repeat-x scroll center bottom #FFFFFF;
+    text-align: center;
 }
 
 dl.fix dt {
@@ -13,4 +13,11 @@ dl.fix dt {
 }
 dl.fix dd {
     min-height: 18px;
+}
+
+th[scope="row"] {
+    color: #666;
+    text-align: right;
+    padding-right: 20px;
+    width: 280px;
 }

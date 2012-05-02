@@ -11,12 +11,17 @@ class Dase_ModuleHandler_Admin extends Dase_Handler {
 
 	public function setup($r)
 	{
-        $this->template = new Dase_Template($r);
+        $this->user = $r->getUser();
+        if ($this->user->is_admin) {
+            //ok
+        } else {
+            $r->renderError(401);
+        }
 	}
 
 	public function getList($r) 
 	{
-		$r->renderResponse($this->template->fetch('index.tpl'));
+		$r->renderTemplate('index.tpl');
 	}
 
 	public function deleteCache($r)

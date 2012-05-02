@@ -4,8 +4,9 @@
         <base href="{{ app_root }}/">
         <meta charset="utf-8">
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-        <meta name="dataset-lat" content="{{ lat }}">
-        <meta name="dataset-lng" content="{{ lng }}">
+        <meta name="dataset-lat" content="{% if item.lat %}{{ item.lat }}{% endif %}">
+        <meta name="dataset-lng" content="{% if item.lng %}{{ item.lng }}{% endif %}">
+        <meta name="dataset-lng" content="{{ item.lng }}">
         <style type="text/css">
             html { height: 100% }
             body { height: 95%;padding: 0 }
@@ -22,9 +23,9 @@
         <body>
             <div id="map_canvas"></div>
             <div class="latlng">
-                <form id="locform" action="{{ app_root }}content/item/{{ item.id }}/location" method="post">
-                    Latitude: <input type="text" name="lat" value="{{ lat }}">
-                    Longitude: <input type="text" name="lng" value="{{ lng }}">
+                <form id="locform" action="{{ app_root }}/content/item/{{ item.id }}/location" method="post">
+                    Latitude: <input type="text" name="lat" value="{{ item.lat }}">
+                    Longitude: <input type="text" name="lng" value="{{ item.lng }}">
                     <input type="submit" value="save location">
                 </form>
             </div>

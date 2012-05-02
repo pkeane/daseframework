@@ -6,6 +6,7 @@ class Dase_Handler_Content extends Dase_Handler
         '/' => 'items',
         'create' => 'content_form',
         'items' => 'items',
+        'items/metadata' => 'items_metadata',
         'file/{name}' => 'file',
         'file/thumb/{name}' => 'thumbnail',
         'file/view/{name}' => 'view',
@@ -13,6 +14,11 @@ class Dase_Handler_Content extends Dase_Handler
         'item/{id}/edit' => 'item_edit_form',
         'item/{id}/swap' => 'item_swap_file',
         'item/{id}/map' => 'item_map',
+        'item/{id}/location' => 'item_location',
+        'attribute/{id}' => 'attribute',
+        'attribute/{id}/edit' => 'attribute_edit_form',
+        'attribute/{id}/input_form' => 'attribute_input_form',
+        'attributes' => 'attributes',
     );
 
     protected function setup($r)
@@ -25,6 +31,123 @@ class Dase_Handler_Content extends Dase_Handler
         }
     }
 
+    public function postToItemsMetadata($r)
+    {
+        if ($r->get('items') && $r->get('attribute_id')) {
+            $item_ids = explode('|',$r->get('items'));
+            foreach ($item_ids as $item_id) {
+                $v = new Dase_DBO_Value($this->db);
+                $v->item_id = $item_id;
+                $v->attribute_id = $r->get('attribute_id');
+                $v->text = $r->get('value_text');
+                $v->insert();
+            }
+        }
+        $r->renderRedirect('content');
+    }
+
+    public function getAttributeInputForm($r) 
+    {
+        $att = new Dase_DBO_Attribute($this->db);
+        if (!$att->load($r->get('id'))) {
+            $r->renderError(404);
+        }
+        if ($att->values_json) {
+            $att->values = json_decode($att->values_json,1);
+        }
+        $r->assign('att',$att);
+        $r->renderTemplate('framework/content_attribute_input_form.tpl');
+    }
+
+    public function getAttributeEditForm($r) 
+    {
+        $att = new Dase_DBO_Attribute($this->db);
+        if (!$att->load($r->get('id'))) {
+            $r->renderRedirect('content/attributes');
+        }
+        if ($att->values_json) {
+            $att->values = json_decode($att->values_json,1);
+            $r->assign('valstring',join("\n",$att->values));
+        }
+        $r->assign('att',$att);
+        $r->renderTemplate('framework/content_attribute_edit.tpl');
+    }
+
+    public function postToAttributeEditForm($r)
+    {
+        $att = new Dase_DBO_Attribute($this->db);
+        if (!$att->load($r->get('id'))) {
+            $r->renderError(404);
+        }
+        if (!$this->user->is_admin) {
+            $r->renderError(401);
+        }
+        $att->name = $r->get('name');
+        $att->values_item_type = $r->get('values_item_type');
+        $att->input_type = $r->get('input_type');
+        $pattern = '/[\n;]/';
+        $prepared_string = preg_replace($pattern,'%',trim($r->get('values')));
+        $values_array = array();
+        foreach (explode('%',$prepared_string) as $v) {
+            $values_array[] = trim($v);
+        }
+        $att->values_json = json_encode($values_array);
+        $att->update();
+        $r->renderRedirect('content/attribute/'.$att->id.'/edit');
+    }
+
+    public function deleteAttribute($r)
+    {
+        $att = new Dase_DBO_Attribute($this->db);
+        if (!$att->load($r->get('id'))) {
+            $r->renderError(404);
+        }
+        if (!$this->user->is_admin) {
+            $r->renderError(401);
+        }
+        $vals = new Dase_DBO_Value($this->db);
+        $vals->attribute_id = $att->id;
+        if (!$vals->findOne()) {
+            $att->delete();
+            $r->renderResponse('deleted attribute');
+        } else {
+            $r->renderError(400);
+        }
+    }
+
+    public function postToAttributes($r)
+    {
+        $att = new Dase_DBO_Attribute($this->db);
+        $att->name = $r->get('name');
+        if (!$att->findOne()) {
+            $att->ascii_id = Dase_DBO_Attribute::findUniqueAsciiId($this->db,$att->name);
+            $att->input_type = 'text';
+            $att->created = date(DATE_ATOM);
+            $att->created_by = $this->user->eid;
+            $att->insert();
+        }
+        $r->renderRedirect('content/attributes');
+    }
+
+    public function postToItemLocation($r)
+    {
+        $item = new Dase_DBO_Item($this->db);
+        if (!$item->load($r->get('id'))) {
+            $r->renderRedirect('content');
+        }
+        $item->lat = $r->get('lat');
+        $item->lng = $r->get('lng');
+        $item->update();
+        $r->renderRedirect('content/item/'.$item->id.'/map');
+    }
+
+    public function getAttributes($r)
+    {
+        $atts = new Dase_DBO_Attribute($this->db);
+        $r->assign('atts',$atts->findAll(1));
+        $r->renderTemplate('framework/content_attributes.tpl');
+    }
+
     public function getItemMap($r)
     {
         $item = new Dase_DBO_Item($this->db);
@@ -32,7 +155,7 @@ class Dase_Handler_Content extends Dase_Handler
             $r->renderError(404);
         }
         $r->assign('item',$item);
-        $r->renderTemplate('framework/map.tpl');
+        $r->renderTemplate('framework/content_item_map.tpl');
     }
 
     public function getItemEditForm($r) 
@@ -93,6 +216,7 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $item->title = $r->get('title');
         $item->body = $r->get('body');
+        $item->type = $r->get('type');
         if ($r->has('lat')) {
             $item->lat = $r->get('lat');
         }
@@ -210,7 +334,7 @@ class Dase_Handler_Content extends Dase_Handler
                 $params['msg'] = "title or body is required if no file is uploaded";
                 $r->renderRedirect('content',$params);
             }
-            $item->name = Dase_DBO_Item::findUniqueName(Dase_Util::dirify($item->title));
+            $item->name = Dase_DBO_Item::findUniqueName($this->db,Dase_Util::dirify($item->title));
             $item->thumbnail_url = 	'www/img/mime_icons/content.png';
         }
         $item->created_by = $this->user->eid;
@@ -225,6 +349,10 @@ class Dase_Handler_Content extends Dase_Handler
 
     public function getItems($r) 
     {
+        $atts = new Dase_DBO_Attribute($this->db);
+        $atts->orderBy('name');
+        $atts = $atts->findAll(1);
+        $r->assign('atts',$atts);
         $items = new Dase_DBO_Item($this->db);
         $items->orderBy('updated DESC');
         $items = $items->findAll(1);
@@ -266,7 +394,7 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $item->title = $title;
         $media_dir = $this->config->getMediaDir();
-        $basename = Dase_DBO_Item::findUniqueName(Dase_Util::dirify($title));
+        $basename = Dase_DBO_Item::findUniqueName($this->db,Dase_Util::dirify($title));
         $name = Dase_File::findNextUnique($media_dir,$basename,$ext);
         $file_path = $media_dir.'/'.$name;
         $ifp = @ fopen( $file_path, 'wb' );
@@ -358,7 +486,7 @@ class Dase_Handler_Content extends Dase_Handler
             if (!$item->title) {
                 $item->title = substr($item->body,0,20);
             }
-            $item->name = Dase_DBO_Item::findUniqueName(Dase_Util::dirify($item->title));
+            $item->name = Dase_DBO_Item::findUniqueName($this->db,Dase_Util::dirify($item->title));
             $item->thumbnail_url = 	'www/img/mime_icons/content.png';
         }
         $item->created_by = $this->user->eid;

@@ -109,37 +109,5 @@ class Dase_Handler_Admin extends Dase_Handler
         $r->renderResponse('added privileges');
     }
 
-    private function _findNextUnique($base_dir,$basename,$ext,$iter=0)
-    {
-        if ($iter) {
-            $checkname = $basename.'_'.$iter.'.'.$ext;
-        } else {
-            $checkname = $basename.'.'.$ext;
-        }
-        if (!file_exists($base_dir.'/'.$checkname)) {
-            return $checkname;
-        } else {
-            $iter++;
-            return $this->_findNextUnique($base_dir,$basename,$ext,$iter);
-        }
-
-    }
-
-    private function _findUniqueName($name,$iter=0)
-    {
-        if ($iter) {
-            $checkname = $name.'_'.$iter;
-        } else {
-            $checkname = $name;
-        }
-        $item = new Dase_DBO_Item($this->db);
-        $item->name = $checkname;
-        if (!$item->findOne()) {
-            return $checkname;
-        } else {
-            $iter++;
-            return $this->_findUniqueName($name,$iter);
-        }
-    }
 }
 

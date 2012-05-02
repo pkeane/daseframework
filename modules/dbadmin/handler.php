@@ -10,13 +10,10 @@ class Dase_ModuleHandler_Dbadmin extends Dase_Handler {
 
 	public function setup($r)
 	{
-        $this->template = new Dase_Template($r);
 	}
 
 	public function getInfo($r) 
 	{
-        $tpl = $this->template;
-
 		$types['sqlite'] = "SQLite";
 		$types['mysql'] = "MySQL";
 		$types['pgsql'] = "PostgreSQL";
@@ -29,8 +26,8 @@ class Dase_ModuleHandler_Dbadmin extends Dase_Handler {
 				}
 			}
 		}
-		$tpl->assign('tables',$tables);
-		$tpl->assign('db',$types[$this->db->getDbType()]);
-		$r->renderResponse($tpl->fetch('index.tpl'));
+		$r->assign('tables',$tables);
+		$r->assign('db',$types[$this->db->getDbType()]);
+		$r->renderTemplate('index.tpl');
 	}
 }

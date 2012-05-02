@@ -12,13 +12,32 @@ $(document).ready(function() {
 	Dase.initLabSelector();
 	Dase.initToggleCheck();
     Dase.initColorbox();
+    Dase.initBulkAdd();
+
 });
 
 
-Dase.initColorbox = function() {
-    $("#loclink").colorbox({iframe:true, innerWidth:800, innerHeight:500});
+Dase.initBulkAdd = function() {
+    $('#bulk_add').find('select[name="attribute_id"]').change(function() {
+        var att_id = $('select[name="attribute_id"] option:selected').val();
+        var url = 'content/attribute/'+att_id+'/input_form';
+        $.get(url,function(data) { $('#att_input_form').html(data); });
+    });
+    $('#bulk_add').submit(function() {
+        var items_input = $(this).find('input[name="items"]');
+        var matches = [];
+        $("#items input:checked").each(function() {
+            matches.push(this.value);
+        });
+        items_input.attr('value',matches.join('|'));
+    });
 };
 
+Dase.initColorbox = function() {
+    $("#loclink").colorbox(
+            {iframe:true, innerWidth:800, innerHeight:500,onClosed: function() {location.reload()}}
+            );
+};
 
 Dase.initToggleCheck = function() {
 	var checked = false;

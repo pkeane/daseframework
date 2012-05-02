@@ -52,7 +52,7 @@
                     </ul>
                     {% if request.user %}
                     <div class="navbar-text pull-right" id="login">
-                    <a href="login/{{ request.user.eid }}" class="btn-mini btn-info btn delete">logout {{ request.user.eid }}</a>
+                    <a href="login/{{ request.user.eid }}" class="btn btn-mini btn-inverse delete">logout {{ request.user.eid }}</a>
                     </div>
                     {% endif %}
                 </div>

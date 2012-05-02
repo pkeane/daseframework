@@ -13,7 +13,7 @@ class Dase_DBO_Autogen_Item extends Dase_DBO
 {
 	public function __construct($db,$assoc = false) 
 	{
-		parent::__construct($db,'item', array('name','title','body','url','file_url','thumbnail_url','view_url','file_path','thumbnail_path','view_path','filesize','file_ext','mime','width','height','lat','lng','created','created_by','updated','updated_by'));
+		parent::__construct($db,'item', array('name','title','type','body','url','file_url','thumbnail_url','view_url','file_path','thumbnail_path','view_path','filesize','file_ext','mime','width','height','lat','lng','created','created_by','updated','updated_by'));
 		if ($assoc) {
 			foreach ( $assoc as $key => $value) {
 				$this->fields[$key] = $value;
@@ -22,6 +22,7 @@ class Dase_DBO_Autogen_Item extends Dase_DBO
 	}
     public function getName() { return $this->fields["name"]; }
     public function getTitle() { return $this->fields["title"]; }
+    public function getType() { return $this->fields["type"]; }
     public function getBody() { return $this->fields["body"]; }
     public function getUrl() { return $this->fields["url"]; }
     public function getFile_url() { return $this->fields["file_url"]; }
