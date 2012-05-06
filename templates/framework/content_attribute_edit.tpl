@@ -18,13 +18,20 @@
             </div>
         </div>
 
+        <div class="control-group">
+            <label class="control-label" for="input-applies_to_type">Applies To Type</label>
+            <div class="controls">
+                <input type="text" class="span4" name="applies_to_type" value="{{ att.applies_to_type }}" id="input-applies_to_type">
+            </div>
+        </div>
 
         <div class="control-group">
             <label class="control-label" for="input-values_item_type">Values Item Type</label>
             <div class="controls">
-                <input type="text" class="span4" name="values_item_type" id="input-values_item_type">
+                <input type="text" class="span4" name="values_item_type" value="{{ att.values_item_type }}" id="input-values_item_type">
             </div>
         </div>
+
         <div class="control-group">
             <label class="control-label" for="input-values_json">Defined Values</label>
             <div class="controls">

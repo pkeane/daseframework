@@ -158,6 +158,11 @@ class Dase_Request
         }
     }
 
+    public function getBody()
+    {
+        return $this->sf_request->getContent();
+    }
+
     public function __call( $method,$args ) 
     {
         return $this->sf_request->$method($args);
@@ -569,7 +574,7 @@ class Dase_Request
 		exit;
 	}
 
-	public function renderOk($msg='')
+	public function renderOk($msg='ok')
 	{
 		$response = new Response();
         $response->setStatusCode(200);

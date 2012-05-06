@@ -7,5 +7,7 @@
     <option>{{ v }}</option>
     {% endfor %}
 </select>
+{% elseif 'textarea' == att.input_type %}
+<textarea rows="4" name="value_text"></textarea>
 {% endif %}
 

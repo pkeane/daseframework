@@ -24,7 +24,13 @@
     <div class="control-group">
         <label class="control-label" for="input-type">Type</label>
         <div class="controls">
-            <input type="text" class="span2" name="type" value="{{ item.type }}" id="input-type">
+            <select name="type">
+                <option value="">select one:</option>
+                <option {% if item.type == 'type' %}selected{% endif %}>type</option>
+                {% for type in types %}
+                <option {% if type.title == item.type %}selected{% endif %}>{{ type.title }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
     <div class="control-group">
@@ -41,6 +47,42 @@
         </div>
     </div>
     <div class="controls"><input type="submit" value="submit" class="btn btn-primary"></div>
+</form>
+
+
+<div class="well">
+    <h3>Edit Metadata</h3>
+    <table id="item_metadata" class="table table-striped table-condensed">
+        <tbody>
+            {% for k,vs in item.metadata_extended %}
+        {% for v in vs.values %}
+        <tr>
+            <th scope="row">{{ vs.label }}</th>
+            <td>
+                <span class="current_value">{{ v.text }}</span>
+                <span class="value_input_form"></span>
+            </td>
+            <td>
+                <a href="{{ v.edit}}/form" class="edit btn btn-mini btn-warning">edit</a></td>
+            <td><a href="{{ v.edit}}" class="delete btn btn-mini btn-danger">delete</a></td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<form method="post" action="content/item/{{ item.id }}/metadata" id="bulk_add" class="well form-inline">
+    <input type="hidden" name="items" value="|">
+    <h3>Add Metadata to Item</h3>
+    <select name="attribute_id">
+        <option value="">select an attribute:</option>
+        {% for att in atts %}
+        <option value="{{ att.id }}">{{ att.name }}</option>
+        {% endfor %}
+    </select>
+    <span id="att_input_form"></span>
+    <input type="submit" value="add metadata">
 </form>
 
 <form action="content/item/{{ item.id }}/swap" class="well form-horizontal" method="post" enctype="multipart/form-data">

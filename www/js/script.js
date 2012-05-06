@@ -3,6 +3,7 @@ var Dase = {};
 $(document).ready(function() {
 	Dase.initDelete('login');
 	Dase.initDelete('set');
+	Dase.initDelete('item_metadata');
 	Dase.initToggle('target');
 	Dase.initToggle('email');
 	//Dase.initSortable('set');
@@ -13,9 +14,24 @@ $(document).ready(function() {
 	Dase.initToggleCheck();
     Dase.initColorbox();
     Dase.initBulkAdd();
-
+    Dase.initCsvUpload();
+    Dase.initEditMetadataValue();
 });
 
+Dase.initCsvUpload = function() {
+    $('a#csv').click(function() {
+        var href = $(this).attr('href');
+        $.colorbox({
+            href:href,
+            width: '480',
+            opacity: 0.5,
+            onComplete: function() {
+                $('#closeColorbox').click(function() {$.colorbox.close();});
+            }
+        });
+        return false;
+    });
+};
 
 Dase.initBulkAdd = function() {
     $('#bulk_add').find('select[name="attribute_id"]').change(function() {
@@ -30,6 +46,16 @@ Dase.initBulkAdd = function() {
             matches.push(this.value);
         });
         items_input.attr('value',matches.join('|'));
+    });
+};
+
+Dase.initEditMetadataValue = function() {
+    $('#item_metadata').find('a.edit').click(function() {
+        $(this).parents('tr').find('span.current_value').hide();
+        var target = $(this).parents('tr').find('span.value_input_form');
+        var url = $(this).attr('href');
+        $.get(url,function(data) { target.html(data); });
+        return false;
     });
 };
 

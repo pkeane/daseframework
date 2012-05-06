@@ -6,12 +6,51 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
 {
 
     public $sets = array();
+    public $metadata_extended = array();
+    public $metadata = array();
 
     public static function getByName($db,$name)
     {
         $item = new Dase_DBO_Item($db);
         $item->name = $name;
         return $item->findOne();
+    }
+
+    public static function processCsv($db,$file,$user)
+    {
+
+        $path = $file->getPathName();
+        $row = 0;
+        if (($handle = fopen($path, "r")) !== FALSE) {
+            $cols = fgetcsv($handle, 1000, ",");
+            if (!in_array('title',$cols)) {
+                return 0;
+            }
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                if ( count($data) >= 3 ) {
+                    $item = new Dase_DBO_Item($db);
+                    $i = 0;
+                    foreach ($data as $cell) {
+                        $column = $cols[$i];
+                        if ($item->hasMember($column)) {
+                            $item->$column = $cell;
+                        }
+                        $i++;
+                    }
+                    $name = Dase_Util::dirify($item->title);
+                    $item->name = Dase_DBO_Item::findUniqueName($db,$name);
+                    $item->url = 'content/item/'.$item->name;
+                    $item->created_by = $user->eid;
+                    $item->created = date(DATE_ATOM);
+                    $item->updated_by = $user->eid;
+                    $item->updated = date(DATE_ATOM);
+                    $item->insert();
+                    $row++;
+                }
+            }
+            fclose($handle);
+        }
+        return $row;
     }
 
     public function expunge()
@@ -74,7 +113,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         }
 
         $name = Dase_File::findNextUnique($media_dir,$basename,$ext);
-        $file_path = $media_dir.'/'.$name;
+        $file_path = $media_dir.'/'.$name.'.'.$ext;
         //move file to new home
         rename($path,$file_path);
         chmod($file_path,0775);
@@ -89,7 +128,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         $this->name = $name;
         $this->file_ext = $ext;
         $this->file_path = $file_path;
-        $this->file_url = 'content/file/'.$name;
+        $this->file_url = 'content/file/'.$name.'.'.$ext;
         $this->filesize = filesize($file_path);
         $this->mime = $mime;
 
@@ -115,8 +154,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
 
             /****  make thumbnail  ****/
 
-            $thumb_name = str_replace('.'.$this->file_ext,'.jpg',$this->name);
-            $thumb_path = $thumb_dir.'/'.$thumb_name;
+            $thumb_path = $thumb_dir.'/'.$this->name.'.jpg';
             $command = CONVERT." \"$this->file_path\" -format jpeg -resize '100x100 >' -colorspace RGB $thumb_path";
             $exec_output = array();
             $results = exec($command,$exec_output);
@@ -124,13 +162,12 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                 $this->log->info("failed to write $thumb_path");
             }
             chmod($thumb_path,0775);
-            $this->thumbnail_url = 'content/file/thumb/'.$thumb_name;
+            $this->thumbnail_url = 'content/file/thumb/'.$this->name.'.jpg';
             $this->thumbnail_path = $thumb_path;
 
             /****  make view  ****/
 
-            $view_name = str_replace('.'.$this->file_ext,'.jpg',$this->name);
-            $view_path = $view_dir.'/'.$view_name;
+            $view_path = $view_dir.'/'.$this->name.'.jpg';
             $command = CONVERT." \"$this->file_path\" -format jpeg -resize '640x480 >' -colorspace RGB $view_path";
             $exec_output = array();
             $results = exec($command,$exec_output);
@@ -138,7 +175,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                 $this->log->info("failed to write $view_path");
             }
             chmod($view_path,0775);
-            $this->view_url = 'content/file/view/'.$view_name;
+            $this->view_url = 'content/file/view/'.$this->name.'.jpg';
             $this->view_path = $view_path;
 
         } else {
@@ -188,14 +225,17 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         if ($this->lng) {
             $set['lng'] = $this->lng;
         }
-        $set['metadata'] = $this->getMetadata();;
+        $set['metadata'] = $this->getMetadata($r);
+        $set['metadata_extended'] = $this->metadata_extended;
         return $set;
     }
 
-    public function getMetadata()
+    public function getMetadata($r)
     {
+        $metadata = array();
+        $metadata_extended = array();
         $sql = "
-            SELECT attribute.ascii_id, value.text
+            SELECT attribute.ascii_id, attribute.name, value.id, value.text
             FROM attribute,value
             WHERE attribute.id = value.attribute_id
             AND value.item_id = ?
@@ -208,7 +248,16 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                 $metadata[$row['ascii_id']] = array();
             }
             $metadata[$row['ascii_id']][] = $row['text'];
+            if (!isset($metadata_extended[$row['ascii_id']])) {
+                $metadata_extended[$row['ascii_id']] = array();
+                $metadata_extended[$row['ascii_id']]['label'] = $row['name'];
+                $metadata_extended[$row['ascii_id']]['values'] = array();
+            }
+            $metadata_extended[$row['ascii_id']]['values'][] = array('text' => $row['text'],'edit' => $r->app_root.'/content/item/'.$this->id.'/metadata/'.$row['id']);
+
         }
+        $this->metadata = $metadata;
+        $this->metadata_extended = $metadata_extended;
         return $metadata;
     }
 

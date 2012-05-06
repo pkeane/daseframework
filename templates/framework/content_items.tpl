@@ -9,13 +9,16 @@
     </div>
 </div>
 
-<h3>Items</h3>
-<table class="table table-striped" id="items">
+<h3>Items ({{ items|length }}) <small><a href="content/items">table</a> | <a href="content/items/thumbnails">thumbnails</a></h3>
+<table class="table table-condensed table-striped" id="items">
     <tr>
         <th></th>
+        <!--
         <th>thumbnail</th>
         <th>name</th>
+        -->
         <th>title</th>
+        <th>type</th>
         <th>created</th>
         <th>created by</th>
         <th>file</th>
@@ -26,16 +29,21 @@
     {% for item in items %}
     <tr>
         <td>
-            <input type="checkbox" name="item[]" value="{{ item.id }}">
+            {{ loop.index }}. <input type="checkbox" name="item[]" value="{{ item.id }}">
         </td>
+        <!--
         <td class="thumb">
             <a href="content/item/{{ item.id }}"><img src="{{ item.thumbnail_url }}"></a>
         </td>
         <td>
             {{ item.name }}
         </td>
+        -->
         <td>
             {{ item.title }}
+        </td>
+        <td>
+            {{ item.type }}
         </td>
         <td>
             {{ item.created|date("Y-m-d") }}

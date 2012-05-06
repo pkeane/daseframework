@@ -35,6 +35,12 @@
         <tr><th scope="row">Created By</th><td>{{ item.created_by }}</td></tr>
         <tr><th scope="row">Updated</th><td>{{ item.updated }}</td></tr>
         <tr><th scope="row">Updated By</th><td>{{ item.updated_by }}</td></tr>
+        <tr><th scope="row" class="divider">metadata attribute</th><td class="divider">metadata value</td></tr>
+        {% for k,vs in item.metadata %}
+        {% for v in vs %}
+        <tr><th scope="row">{{ k }}</th><td>{{ v }}</td></tr>
+        {% endfor %}
+        {% endfor %}
     </tbody>
 </table>
 

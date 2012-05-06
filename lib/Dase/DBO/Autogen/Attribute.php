@@ -13,7 +13,7 @@ class Dase_DBO_Autogen_Attribute extends Dase_DBO
 {
 	public function __construct($db,$assoc = false) 
 	{
-		parent::__construct($db,'attribute', array('name','ascii_id','created','created_by','values_item_type','values_json','input_type'));
+		parent::__construct($db,'attribute', array('name','ascii_id','created','created_by','values_item_type','values_json','input_type','applies_to_type'));
 		if ($assoc) {
 			foreach ( $assoc as $key => $value) {
 				$this->fields[$key] = $value;
@@ -27,4 +27,5 @@ class Dase_DBO_Autogen_Attribute extends Dase_DBO
     public function getValues_item_type() { return $this->fields["values_item_type"]; }
     public function getValues_json() { return $this->fields["values_json"]; }
     public function getInput_type() { return $this->fields["input_type"]; }
+    public function getApplies_to_type() { return $this->fields["applies_to_type"]; }
 }

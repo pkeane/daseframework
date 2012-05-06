@@ -7,6 +7,7 @@
         <tr>
             <th>name</th>
             <th>ascii_id</th>
+            <th>applies to type</th>
             <th>values item type</th>
             <th>values json</th>
             <th>input type</th>
@@ -19,6 +20,9 @@
             </td>
             <td>
                 {{ att.ascii_id }}
+            </td>
+            <td>
+                {{ att.applies_to_type }}
             </td>
             <td>
                 {{ att.values_item_type }}

@@ -312,12 +312,13 @@ abstract class Dase_File
     public static function findNextUnique($base_dir,$basename,$ext,$iter=0)
     {
         if ($iter) {
-            $checkname = $basename.'_'.$iter.'.'.$ext;
+            $new_basename = $basename.'_'.$iter;
         } else {
-            $checkname = $basename.'.'.$ext;
+            $new_basename = $basename;
         }
+        $checkname = $new_basename.'.'.$ext;
         if (!file_exists($base_dir.'/'.$checkname)) {
-            return $checkname;
+            return $new_basename;
         } else {
             $iter++;
             return Dase_File::findNextUnique($base_dir,$basename,$ext,$iter);
