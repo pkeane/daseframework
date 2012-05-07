@@ -517,12 +517,8 @@ class Dase_Handler_Content extends Dase_Handler
         $atts->orderBy('name');
         $atts = $atts->findAll(1);
         $r->assign('atts',$atts);
-        $items = new Dase_DBO_Item($this->db);
-        if ($r->get('type')) {
-            $items->type = $r->get('type');
-        }
-        $items->orderBy('updated DESC');
-        $items = $items->findAll(1);
+
+        $items = Dase_DBO_Item::retrieveSet($this->db,$r);
         $max = $r->get('max') ? $r->get('max') : 36;
         $start = $r->get('start') ? $r->get('start') : 1;
         $items = array_slice($items,$start-1,$max);
@@ -532,16 +528,7 @@ class Dase_Handler_Content extends Dase_Handler
 
     public function getItemsThumbnails($r) 
     {
-        $atts = new Dase_DBO_Attribute($this->db);
-        $atts->orderBy('name');
-        $atts = $atts->findAll(1);
-        $r->assign('atts',$atts);
-        $items = new Dase_DBO_Item($this->db);
-        if ($r->get('type')) {
-            $items->type = $r->get('type');
-        }
-        $items->orderBy('updated DESC');
-        $items = $items->findAll(1);
+        $items = Dase_DBO_Item::retrieveSet($this->db,$r);
         $max = $r->get('max') ? $r->get('max') : 36;
         $start = $r->get('start') ? $r->get('start') : 1;
         $items = array_slice($items,$start-1,$max);

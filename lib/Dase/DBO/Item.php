@@ -16,6 +16,81 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         return $item->findOne();
     }
 
+    public static function retrieveSet($db,$r) 
+    {
+        $type = $r->get('type');
+        $att = $r->get('att');
+        $val = $r->get('val');
+        $q = $r->get('q');
+        $sort = $r->get('sort');
+
+        //ignore $q if $att & $val
+        if ($att && $val) {
+            $exec_array = array($att,$val);
+            $sql = "
+                SELECT item.* 
+                FROM value, attribute,item
+                WHERE attribute.ascii_id = ?
+                AND value.text = ?
+                AND value.attribute_id = attribute.id
+                AND item.id = value.item_id
+                ";
+            if ($type) {
+                $sql .= "AND item.type = ?";
+                $exec_array[] = $type;
+                   
+            }
+            if ($sort) {
+                $sql .= "ORDER BY item.$sort"; 
+            } else {
+                $sql .= "ORDER BY item.updated DESC"; 
+            }
+            $item = new Dase_DBO_Item($db);
+            $sth = $db->getDbh()->prepare($sql);
+            $sth->setFetchMode(PDO::FETCH_INTO,$item);
+            $sth->execute($exec_array);
+            $items = $sth->fetchAll();
+        } elseif ($q) {
+            $q = "%$q%";
+            $exec_array = array($q,$q);
+            $sql = "
+                SELECT item.*
+                FROM item 
+                WHERE body like ? 
+                OR title like ? 
+                ";
+            if ($type) {
+                $sql .= "AND type = ?";
+                $exec_array[] = $type;
+                   
+            }
+            if ($sort) {
+                $sql .= "ORDER BY item.$sort";
+            } else {
+                $sql .= "ORDER BY item.updated DESC"; 
+            }
+            $item = new Dase_DBO_Item($db);
+            $sth = $db->getDbh()->prepare($sql);
+            $sth->setFetchMode(PDO::FETCH_INTO,$item);
+            $sth->execute($exec_array);
+            $items = $sth->fetchAll();
+        } else {
+            //only deal w/ sort & type
+            $items = new Dase_DBO_Item($db);
+            if ($type) {
+                $items->type = $type;
+            }
+            if ($sort) {
+                $items->orderBy($sort);
+            } else {
+                $items->orderBy('updated DESC');
+            }
+            $items = $items->findAll(1);
+        }
+        return $items;
+    }
+
+
     public static function processCsv($db,$file,$user)
     {
 
