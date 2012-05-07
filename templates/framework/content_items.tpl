@@ -40,10 +40,10 @@
         </td>
         -->
         <td>
-            {{ item.title }}
+            <a href="content/item/{{ item.id }}">{{ item.title }}</a>
         </td>
         <td>
-            {{ item.type }}
+            <a href="content/items/thumbnails?type={{ item.type }}">{{ item.type }}</a>
         </td>
         <td>
             {{ item.created|date("Y-m-d") }}
