@@ -33,7 +33,7 @@
         {% endfor %}
     </select>
     <span id="att_input_form"></span>
-    <input type="submit" value="add metadata">
+    <input type="submit" class="btn btn-primary" value="add metadata">
 </form>
 
 {% endblock %}

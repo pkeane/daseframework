@@ -23,7 +23,7 @@
         <body>
             <div id="map_canvas"></div>
             <div class="latlng">
-                <form id="locform" action="{{ app_root }}/content/item/{{ item.id }}/location" method="post">
+                <form id="locform" action="{{ app_root }}/content/items/{{ item.id }}/location" method="post">
                     Latitude: <input type="text" name="lat" value="{{ item.lat }}">
                     Longitude: <input type="text" name="lng" value="{{ item.lng }}">
                     <input type="submit" value="save location">

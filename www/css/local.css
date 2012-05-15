@@ -55,6 +55,11 @@ ul.thumbnails li.highlight {
     background-color: #eee;
 }
 
+ul.thumbnails li.type div.thumbnail {
+    border-color: #009;
+    border-width: 2px;
+}
+
 span.inactive {
     color: #999;
 }

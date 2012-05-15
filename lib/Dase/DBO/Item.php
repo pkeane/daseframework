@@ -169,7 +169,20 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
 
     public function deleteFiles()
     {
-
+        $this->deleteMedia();
+        $this->file_path = '';
+        $this->thumbnail_path = '';
+        $this->view_path = '';
+        $this->file_url = '';
+        $this->thumbnail_url = '';
+        $this->view_url = '';
+        $this->filesize = 0;
+        $this->file_ext = '';
+        $this->file_original_name = '';
+        $this->mime = '';
+        $this->width = 0;
+        $this->height = 0;
+        $this->update();
     }
 
     public function processUploadedFile(Symfony\Component\HttpFoundation\File\UploadedFile $file) 

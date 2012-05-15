@@ -9,6 +9,7 @@ class Dase_Handler_Content extends Dase_Handler
         'items' => 'items',
         'items/thumbnails' => 'items_thumbnails',
         'items/metadata' => 'items_metadata',
+        'items/{id}/files' => 'item_files',
         'items/{id}/metadata' => 'item_metadata',
         'items/{id}/metadata/{value_id}' => 'item_metadata_value',
         'items/{id}/metadata/{value_id}/form' => 'item_metadata_value_form',
@@ -36,6 +37,16 @@ class Dase_Handler_Content extends Dase_Handler
         } else {
             $r->renderError(401);
         }
+    }
+
+    public function deleteItemFiles($r) 
+    {
+        $item = new Dase_DBO_Item($this->db);
+        if (!$item->load($r->get('id'))) {
+            $r->renderError(404);
+        }
+        $item->deleteFiles();
+        $r->renderResponse('deleted');
     }
 
     public function getCsvForm($r)
@@ -310,14 +321,19 @@ class Dase_Handler_Content extends Dase_Handler
         if (!$item->load($r->get('id'))) {
             $r->renderRedirect('content/items');
         }
+        $r->assign('not_set',$r->get('not_set'));
+        $r->assign('page',$r->get('page'));
+        $r->assign('q',$r->get('q'));
+        $r->assign('att',$r->get('att'));
+        $r->assign('val',$r->get('val'));
+        $r->assign('type',$r->get('type'));
+        $r->assign('max',$r->get('max'));
+        $r->assign('num',$r->get('num'));
+        $r->assign('display',$r->get('display'));
+        $r->assign('item',$item);
         $types = new Dase_DBO_Item($this->db);
         $types->type = 'type';
         $r->assign('types',$types->findAll(1));
-        $atts = new Dase_DBO_Attribute($this->db);
-        $atts->orderBy('name');
-        $atts = $atts->findAll(1);
-        $item->getMetadata($r);
-        $r->assign('atts',$atts);
         $r->assign('item',$item);
         $r->renderTemplate('framework/content_item_edit.tpl');
     }
@@ -328,6 +344,15 @@ class Dase_Handler_Content extends Dase_Handler
         if (!$item->load($r->get('id'))) {
             $r->renderRedirect('content/items');
         }
+        $r->assign('not_set',$r->get('not_set'));
+        $r->assign('page',$r->get('page'));
+        $r->assign('q',$r->get('q'));
+        $r->assign('att',$r->get('att'));
+        $r->assign('val',$r->get('val'));
+        $r->assign('type',$r->get('type'));
+        $r->assign('max',$r->get('max'));
+        $r->assign('num',$r->get('num'));
+        $r->assign('display',$r->get('display'));
         $types = new Dase_DBO_Item($this->db);
         $types->type = 'type';
         $r->assign('types',$types->findAll(1));
@@ -402,7 +427,7 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $item->title = $r->get('title');
         $item->body = $r->get('body');
-        $item->type = $r->get('type');
+        $item->type = $r->get('item_type');
         if ($r->has('lat')) {
             $item->lat = $r->get('lat');
         }
@@ -412,7 +437,18 @@ class Dase_Handler_Content extends Dase_Handler
         $item->updated_by = $this->user->eid;
         $item->updated = date(DATE_ATOM);
         $item->update();
-        $r->renderResponse('item updated');
+        if ($r->get('not_set')) {
+            $r->renderRedirect('content/items/'.$item->id);
+        }
+        $params['page'] = $r->get('page');
+        $params['q'] = $r->get('q');
+        $params['att'] = $r->get('att');
+        $params['val'] = $r->get('val');
+        $params['type'] = $r->get('type');
+        $params['max'] = $r->get('max');
+        $params['num'] = $r->get('num');
+        $params['display'] = $r->get('display');
+        $r->renderRedirect('content/items',$params);
     }
 
     public function getItemSwap($r) 
@@ -573,6 +609,10 @@ class Dase_Handler_Content extends Dase_Handler
         //total == how many items total (unpaged) this search returns
         $total = count($items);
 
+        if (0 == $total) {
+           // $r->renderTemplate('framework/content_items_thumbs.tpl');
+        }
+
         //max == mximun # of items shown on a page
         $max = $r->get('max') ? $r->get('max') : 60;
 
@@ -618,6 +658,7 @@ class Dase_Handler_Content extends Dase_Handler
         if ($r->get('curr')) {
             $r->assign('curr',$r->get('curr'));
         }
+
 
         if ($r->get('num')) {
             $num = $r->get('num');

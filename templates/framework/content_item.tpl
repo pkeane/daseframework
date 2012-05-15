@@ -1,13 +1,30 @@
 {% extends "framework/bootstrap.tpl" %}
 
 {% block content %}
+
+<div class="pull-right">
+    <a href="content/create" class="btn btn-primary">create content</a>
+    <a href="content/attributes" class="btn btn-primary">manage attributes</a>
+</div>
+
+
+<div class="page-header">
+{% if num %}
+<h2>{{ num }} of {{ total }} total items</h2>
+{% else %}
+<h2>Item: {{ item.title }}</h2>
+{% endif %}
+</div>
+
+
+
 {% if is_set %}
 <div class="pagination">
     <ul>
         <li {% if num < 2 %}class="disabled"{% endif %}><a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num - 1 }}&amp;display={{ display }}">Prev</a></li>
 
         <li><a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;curr={{ num }}&amp;display={{ display }}#curr{{ num }}">Up</a></li>
-        <li {% if num >= max + start %}class="disabled"{% endif %}><a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num + 1 }}&amp;display={{ display }}">Next</a></li>
+        <li {% if num >= total %}class="disabled"{% endif %}><a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num + 1 }}&amp;display={{ display }}">Next</a></li>
     </ul>
 </div>
 {% endif %}
@@ -46,8 +63,15 @@
     </dl>
     <div class="caption">
         <p>
-        <a href="content/items/{{ item.id }}/edit" id="edit-item" class="btn btn-warning">edit item</a>
-        <a href="content/items/{{ item.id }}/edit/metadata" id="edit-item-metadata" class="btn btn-warning">add/edit metadata</a>
+        {% if is_set %}
+        <a href="content/items/{{ item.id }}/edit?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num }}&amp;display={{ display }}" id="edit-item" class="btn btn-info">edit item</a>
+        <a href="content/items/{{ item.id }}/edit/metadata?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num }}&amp;display={{ display }}" id="edit-item-metadata" class="btn btn-info">add/edit metadata</a>
+        <a class="btn btn-info" id="loclink" href="content/items/{{ item.id }}/map">Add/Change Location</a>
+        {% else %}
+        <a href="content/items/{{ item.id }}/edit?not_set=1" id="edit-item" class="btn btn-info">edit item</a>
+        <a href="content/items/{{ item.id }}/edit/metadata?not_set=1" id="edit-item-metadata" class="btn btn-info">add/edit metadata</a>
+        <a class="btn btn-info" id="loclink" href="content/items/{{ item.id }}/map">Add/Change Location</a>
+        {% endif %}
         </p>
     </div>
     </div>

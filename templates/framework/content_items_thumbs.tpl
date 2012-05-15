@@ -8,13 +8,13 @@
 
 
 <div class="page-header">
-<h1>{{ start }} - {{ end }} of {{ total }} total items
+<h2>{{ start }} - {{ end }} of {{ total }} total items
     <small>
         <a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;display=table">table </a>
         |
         <a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}">thumbnails</a>
     </small>
-</h1>
+</h2>
 </div>
 
 {% if total > max %}
@@ -42,7 +42,7 @@
 
 <ul class="thumbnails contact_sheet"> 
     {% for item in items %}
-    <li class="span2{% if curr == loop.index+start-1 %} highlight{% endif %}">
+    <li class="span2{% if curr == loop.index+start-1 %} highlight{% endif %}{% if 'type' == item.type %} type{% endif %}">
     <a name="curr{{ loop.index + start + 6 }}"></a>
     <span class="index">{{ loop.index + start - 1 }}.</span>
     <!--<a href="content/items/{{ item.id }}">-->
@@ -53,7 +53,7 @@
             {% else %}
             <img src="content/file/thumb/{{ item.type }}.jpg" alt="{{ item.type }} icon">
             {% endif %}
-            <div class="caption">{{ item.title|slice(0,20) }} <small>{{ item.type }}</small></div>
+            <div class="caption">{{ item.title|slice(0,20) }} <small>[{{ item.type }}]</small></div>
         </div>
     </a>
     </li>

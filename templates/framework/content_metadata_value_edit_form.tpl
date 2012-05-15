@@ -11,5 +11,5 @@
 {% elseif 'textarea' == att.input_type %}
 <textarea rows="4" name="value_text">{{ value.text }}</textarea>
 {% endif %}
-<input type="submit" value="update">
+<input type="submit" class="btn btn-primary" value="update">
 </form>
