@@ -16,7 +16,64 @@ $(document).ready(function() {
     Dase.initBulkAdd();
     Dase.initCsvUpload();
     Dase.initEditMetadataValue();
+    Dase.initEditItem();
+    Dase.initEditItemForm();
 });
+
+Dase.initEditItemForm = function() {
+    $('#edit_item_form').submit(function() {
+        $.ajax({  
+            type: "POST",  
+            url: $(this).attr('action'),  
+            data: $(this).serialize(),  
+            success: function(data) {  
+                location.reload();
+            }  
+        });
+        return false;
+    });
+};
+
+Dase.initEditItem = function() {
+    $('a#edit-item').click(function() {
+        var href = $(this).attr('href');
+        $.colorbox({
+            href:href,
+            opacity: 0.5,
+            width: 900,
+            onComplete: function() {
+                Dase.initEditItemForm();
+                Dase.initDelete('item_metadata');
+                $('#closeColorbox').click(function() {$.colorbox.close();});
+            },
+        });
+        return false;
+    });
+    $('a#edit-item-swap').click(function() {
+        var href = $(this).attr('href');
+        $.colorbox({
+            href:href,
+            opacity: 0.5,
+            onComplete: function() {
+                $('#closeColorbox').click(function() {$.colorbox.close();});
+            },
+        });
+        return false;
+    });
+    $('a#edit-item-metadata').click(function() {
+        var href = $(this).attr('href');
+        $.colorbox({
+            href:href,
+            width: '700',
+            opacity: 0.5,
+            onComplete: function() {
+                Dase.initEditMetadataValue();
+                $('#closeColorbox').click(function() {$.colorbox.close();});
+            },
+        });
+        return false;
+    });
+};
 
 Dase.initCsvUpload = function() {
     $('a#csv').click(function() {

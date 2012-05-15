@@ -1,4 +1,4 @@
-<form method="post" action="content/item/{{ item.id }}/metadata/{{ value.id }}">
+<form method="post" action="content/items/{{ item.id }}/metadata/{{ value.id }}">
 {% if 'text' == att.input_type %}
 <input type="text" value="{{ value.text }}" name="value_text">
 {% elseif 'select' == att.input_type %}

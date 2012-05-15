@@ -9,10 +9,10 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
     public $metadata_extended = array();
     public $metadata = array();
 
-    public static function getByName($db,$name)
+    public static function getBySernum($db,$serial_number)
     {
         $item = new Dase_DBO_Item($db);
-        $item->name = $name;
+        $item->serial_number = $serial_number;
         return $item->findOne();
     }
 
@@ -23,6 +23,14 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         $val = $r->get('val');
         $q = $r->get('q');
         $sort = $r->get('sort');
+
+        $r->assign('type',$type);
+        $r->assign('att',$att);
+        $r->assign('val',$val);
+        $r->assign('q',$q);
+        $r->assign('sort',$sort);
+
+        $items = array();
 
         //ignore $q if $att & $val
         if ($att && $val) {
@@ -43,13 +51,17 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             if ($sort) {
                 $sql .= "ORDER BY item.$sort"; 
             } else {
-                $sql .= "ORDER BY item.updated DESC"; 
+                $sql .= "ORDER BY item.id DESC"; 
             }
+            //print_r($exec_array); exit;
             $item = new Dase_DBO_Item($db);
             $sth = $db->getDbh()->prepare($sql);
             $sth->setFetchMode(PDO::FETCH_INTO,$item);
             $sth->execute($exec_array);
-            $items = $sth->fetchAll();
+            while ($item = $sth->fetch()) {
+                $items[] = clone($item);
+            }
+            //$items = $sth->fetchAll();
         } elseif ($q) {
             $q = "%$q%";
             $exec_array = array($q,$q);
@@ -67,13 +79,16 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             if ($sort) {
                 $sql .= "ORDER BY item.$sort";
             } else {
-                $sql .= "ORDER BY item.updated DESC"; 
+                $sql .= "ORDER BY item.id DESC"; 
             }
             $item = new Dase_DBO_Item($db);
             $sth = $db->getDbh()->prepare($sql);
             $sth->setFetchMode(PDO::FETCH_INTO,$item);
             $sth->execute($exec_array);
-            $items = $sth->fetchAll();
+            while ($item = $sth->fetch()) {
+                $items[] = clone($item);
+            }
+            //$items = $sth->fetchAll();
         } else {
             //only deal w/ sort & type
             $items = new Dase_DBO_Item($db);
@@ -83,7 +98,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             if ($sort) {
                 $items->orderBy($sort);
             } else {
-                $items->orderBy('updated DESC');
+                $items->orderBy('id DESC');
             }
             $items = $items->findAll(1);
         }
@@ -112,9 +127,8 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                         }
                         $i++;
                     }
-                    $name = Dase_Util::dirify($item->title);
-                    $item->name = Dase_DBO_Item::findUniqueName($db,$name);
-                    $item->url = 'content/item/'.$item->name;
+                    $item->serial_number = Dase_DBO_Item::getUniqueSerialNumber($db);
+                    $item->url = 'content/item/'.$item->serial_number;
                     $item->created_by = $user->eid;
                     $item->created = date(DATE_ATOM);
                     $item->updated_by = $user->eid;
@@ -175,7 +189,6 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         }
 
         $ext = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
-        $basename = Dase_Util::dirify(pathinfo($orig_name,PATHINFO_FILENAME));
 
         if ('application/pdf' == $mime) {
             $ext = 'pdf';
@@ -187,8 +200,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             $ext = 'docx';
         }
 
-        $name = Dase_File::findNextUnique($media_dir,$basename,$ext);
-        $file_path = $media_dir.'/'.$name.'.'.$ext;
+        $file_path = $media_dir.'/'.$this->serial_number.'.'.$ext;
         //move file to new home
         rename($path,$file_path);
         chmod($file_path,0775);
@@ -200,22 +212,18 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         if (isset($size[1]) && $size[1]) { 
             $this->height = $size[1]; 
         }
-        $this->name = $name;
         $this->file_ext = $ext;
         $this->file_path = $file_path;
-        $this->file_url = 'content/file/'.$name.'.'.$ext;
+        $this->file_url = 'content/file/'.$this->serial_number.'.'.$ext;
         $this->filesize = filesize($file_path);
+        $this->file_original_name = $orig_name;
         $this->mime = $mime;
 
         $this->makeDerivatives($media_dir);
-        return $name;
     }
 
     public function makeDerivatives($media_dir) 
     {
-        if (!$this->name) {
-            return;
-        }
         $thumb_dir = $media_dir.'/thumb';
         if (!file_exists($thumb_dir) || !is_writeable($thumb_dir)) {
             $r->renderError(403,'thumbnail directory not writeable: '.$thumb_dir);
@@ -229,7 +237,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
 
             /****  make thumbnail  ****/
 
-            $thumb_path = $thumb_dir.'/'.$this->name.'.jpg';
+            $thumb_path = $thumb_dir.'/'.$this->serial_number.'.jpg';
             $command = CONVERT." \"$this->file_path\" -format jpeg -resize '100x100 >' -colorspace RGB $thumb_path";
             $exec_output = array();
             $results = exec($command,$exec_output);
@@ -237,12 +245,12 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                 $this->log->info("failed to write $thumb_path");
             }
             chmod($thumb_path,0775);
-            $this->thumbnail_url = 'content/file/thumb/'.$this->name.'.jpg';
+            $this->thumbnail_url = 'content/file/thumb/'.$this->serial_number.'.jpg';
             $this->thumbnail_path = $thumb_path;
 
             /****  make view  ****/
 
-            $view_path = $view_dir.'/'.$this->name.'.jpg';
+            $view_path = $view_dir.'/'.$this->serial_number.'.jpg';
             $command = CONVERT." \"$this->file_path\" -format jpeg -resize '640x480 >' -colorspace RGB $view_path";
             $exec_output = array();
             $results = exec($command,$exec_output);
@@ -250,7 +258,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                 $this->log->info("failed to write $view_path");
             }
             chmod($view_path,0775);
-            $this->view_url = 'content/file/view/'.$this->name.'.jpg';
+            $this->view_url = 'content/file/view/'.$this->serial_number.'.jpg';
             $this->view_path = $view_path;
 
         } else {
@@ -259,12 +267,12 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         }
     }
 
-    public function asArray($r)
+    public function getAsArray($r)
     {
         $set = array();
-        $set['id'] = $r->app_root.'/item/'.$this->name;
+        $set['id'] = $r->app_root.'/content/item/'.$this->serial_number;
         $set['title'] = $this->title;
-        $set['name'] = $this->name;
+        $set['serial_number'] = $this->serial_number;
         $set['item_id'] = $this->id;
         if ($this->body) {
             $set['body'] = $this->body;
@@ -328,7 +336,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                 $metadata_extended[$row['ascii_id']]['label'] = $row['name'];
                 $metadata_extended[$row['ascii_id']]['values'] = array();
             }
-            $metadata_extended[$row['ascii_id']]['values'][] = array('text' => $row['text'],'edit' => $r->app_root.'/content/item/'.$this->id.'/metadata/'.$row['id']);
+            $metadata_extended[$row['ascii_id']]['values'][] = array('text' => $row['text'],'edit' => $r->app_root.'/content/items/'.$this->id.'/metadata/'.$row['id']);
 
         }
         $this->metadata = $metadata;
@@ -336,27 +344,26 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         return $metadata;
     }
 
-    public function asJson($r)
+    public function getAsJson($r)
     {
-        return Dase_Json::get($this->asArray($r));
+        return Dase_Json::get($this->getAsArray($r));
     }
 
-    public static function findUniqueName($db,$name,$iter=0)
+    public static function getUniqueSerialNumber($db,$serial_number=null)
     {
-        if ($iter) {
-            $checkname = $name.'_'.$iter;
-        } else {
-            $checkname = $name;
+        if (!$serial_number) {
+            $serial_number = dechex(mt_rand(1048576,16777215));
+            return Dase_DBO_Item::getUniqueSerialNumber($db,$serial_number);
         }
+        $serial_number = Dase_Util::dirify($serial_number);
         $item = new Dase_DBO_Item($db);
-        $item->name = $checkname;
-        if (!$item->findOne()) {
-            return $checkname;
+        $item->serial_number = $serial_number;
+        if ($item->findOne()) {
+            $serial_number = dechex(mt_rand(1048576,16777215));
+            return Dase_DBO_Item::getUniqueSerialNumber($db,$serial_number);
         } else {
-            $iter++;
-            return Dase_DBO_Item::findUniqueName($db,$name,$iter);
+            return $serial_number;
         }
     }
-
 
 }

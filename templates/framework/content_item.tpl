@@ -1,57 +1,78 @@
 {% extends "framework/bootstrap.tpl" %}
 
 {% block content %}
-<div class="container">
-    <p>
-    <a href="content/item/{{ item.id }}/edit" class="btn btn-warning">edit item</a>
-    </p>
+{% if is_set %}
+<div class="pagination">
+    <ul>
+        <li {% if num < 2 %}class="disabled"{% endif %}><a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num - 1 }}&amp;display={{ display }}">Prev</a></li>
 
-    <div class="row">
-        <div class="span7">
-            <img src="{{ item.view_url }}">
-        </div>
-        <table class="table table-striped table-bordered table-condensed span5">
-            <tbody>
-                <tr><th scope="row" class="divider">metadata attribute</th><td class="divider">metadata value</td></tr>
-                {% for k,vs in item.metadata %}
-                {% for v in vs %}
-                <tr><th scope="row">{{ k }}</th><td>{{ v }}</td></tr>
-                {% endfor %}
-                {% endfor %}
-                <tr><th scope="row" class="divider">att</th><td class="divider">value</td></tr>
-                <tr><th scope="row">Name</th><td>{{ item.name }}</td></tr>
-                <tr><th scope="row">Title</th><td>{{ item.title }}</td></tr>
-                <tr><th scope="row">Body</th><td>{{ item.body }}</td></tr>
-                <tr><th scope="row">Type</th><td>{{ item.type }}</td></tr>
-                <tr><th scope="row">Url</th><td>{{ item.url }}</td></tr>
-                <tr><th scope="row">File Url</th><td>{{ item.file_url }}</td></tr>
-                <!--
-                <tr><th scope="row">Thumbnail Url</th>
-                    <td>
-                        <img src="{{ item.thumbnail_url }}">
-                        {{ item.thumbnail_url }}
-                    </td>
-                </tr>
-                -->
-                <tr><th scope="row">View Url</th><td>{{ item.view_url }}</td></tr>
-                <tr><th scope="row">File Path</th><td>{{ item.file_path }}</td></tr>
-                <tr><th scope="row">Thumbnail Path</th><td>{{ item.thumbnail_path }}</td></tr>
-                <tr><th scope="row">View Path</th><td>{{ item.view_path }}</td></tr>
-                <tr><th scope="row">Filesize</th><td>{{ item.filesize }}</td></tr>
-                <tr><th scope="row">File Ext</th><td>{{ item.file_ext }}</td></tr>
-                <tr><th scope="row">Mime</th><td>{{ item.mime }}</td></tr>
-                <tr><th scope="row">Width</th><td>{{ item.width }}</td></tr>
-                <tr><th scope="row">Height</th><td>{{ item.height }}</td></tr>
-                <tr><th scope="row">Lat</th><td>{{ item.lat }}</td></tr>
-                <tr><th scope="row">Lng</th><td>{{ item.lng }}</td></tr>
-                <tr><th scope="row">Created</th><td>{{ item.created }}</td></tr>
-                <tr><th scope="row">Created By</th><td>{{ item.created_by }}</td></tr>
-                <tr><th scope="row">Updated</th><td>{{ item.updated }}</td></tr>
-                <tr><th scope="row">Updated By</th><td>{{ item.updated_by }}</td></tr>
-            </tbody>
-        </table>
-    </div>
-
+        <li><a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;curr={{ num }}&amp;display={{ display }}#curr{{ num }}">Up</a></li>
+        <li {% if num >= max + start %}class="disabled"{% endif %}><a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num + 1 }}&amp;display={{ display }}">Next</a></li>
+    </ul>
 </div>
+{% endif %}
+
+<ul class="thumbnails">
+    <li class="span5">
+    <div class="thumbnail">
+    <dl class="dl-horizontal fix metadata">
+        {% for k,vs in item.metadata %}
+        {% for v in vs %}
+        <dt>{{ k }}</dt><dd><a href="content/items?att={{ k }}&val={{ v }}">{{ v }}</a></dd>
+        {% endfor %}
+        {% endfor %}
+        <dt>----</dt><dd>----</dd>
+        <dt>Permalink</dt><dd><a href="{{ app_root }}/content/items/{{ item.id }}">{{ app_root }}/content/items/{{ item.id }}</a></dd>
+        <dt>Serial Number</dt><dd>{{ item.serial_number }}</dd>
+        <dt>Title</dt><dd>{{ item.title }}</dd>
+        <dt>Body</dt><dd>{{ item.body }}</dd>
+        <dt>Type</dt><dd><a href="content/items?type={{ item.type }}">{{ item.type }}</a></dd>
+        <dt>Url</dt><dd><a href="{{ item.url }}">{{ item.url }}</a></dd>
+        <dt>JSON Url</dt><dd><a href="{{ item.url }}.json">{{ item.url }}.json</a></dd>
+        <dt>File Url</dt><dd><a href="{{ item.file_url }}">{{ item.file_url }}</a></dd>
+        <dt>Thumbnail Url</dt><dd><a href="{{ item.thumbnail_url}}">{{ item.thumbnail_url }}</a></dd>
+        <dt>View Url</dt><dd><a href="{{ item.view_url }}">{{ item.view_url }}</a></dd>
+        <dt>Filesize</dt><dd>{{ item.filesize }}</dd>
+        <dt>File Ext</dt><dd>{{ item.file_ext }}</dd>
+        <dt>Mime</dt><dd>{{ item.mime }}</dd>
+        <dt>Width</dt><dd>{{ item.width }}</dd>
+        <dt>Height</dt><dd>{{ item.height }}</dd>
+        <dt>Lat</dt><dd>{{ item.lat }}</dd>
+        <dt>Lng</dt><dd>{{ item.lng }}</dd>
+        <dt>Created</dt><dd>{{ item.created }}</dd>
+        <dt>Created By</dt><dd>{{ item.created_by }}</dd>
+        <dt>Updated</dt><dd>{{ item.updated }}</dd>
+        <dt>Updated By</dt><dd>{{ item.updated_by }}</dd>
+    </dl>
+    <div class="caption">
+        <p>
+        <a href="content/items/{{ item.id }}/edit" id="edit-item" class="btn btn-warning">edit item</a>
+        <a href="content/items/{{ item.id }}/edit/metadata" id="edit-item-metadata" class="btn btn-warning">add/edit metadata</a>
+        </p>
+    </div>
+    </div>
+    </li>
+
+    <li class="span7">
+    <div class="thumbnail">
+        <a href="{{ item.file_url }}">
+            {% if item.view_url %}
+            <img src="{{ item.view_url }}" alt="{{ item.title }}">
+            {% else %}
+            <img src="content/file/thumb/{{ item.type }}.jpg" alt="{{ item.type }} icon">
+            {% endif %}
+        </a>
+        <div class="caption">
+            <p>
+            {% if is_set %}
+            <a href="content/items/{{ item.id }}/swap?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num }}&amp;display={{ display }}" id="edit-item-swap" class="btn btn-warning">swap image</a>
+            {% else %}
+            <a href="content/items/{{ item.id }}/swap?not_set=1" id="edit-item-swap" class="btn btn-warning">swap image</a>
+            {% endif %}
+            </p>
+        </div>
+    </div>
+    </li>
+</ul>
 
 {% endblock %}

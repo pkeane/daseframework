@@ -15,6 +15,18 @@ dl.fix dd {
     min-height: 18px;
 }
 
+dl.metadata {
+    background-color: #eee;
+    padding: 6px 3px;
+    margin-top: 0px;
+}
+
+dl.metadata hr {
+    color: #bbb;
+    background-color: #bbb;
+    height: 5px;
+}
+
 th[scope="row"] {
     color: #666;
     text-align: right;
@@ -22,27 +34,27 @@ th[scope="row"] {
     width: 110px;
 }
 
-ul.thumbnails li  {
-}
-
-a.thumbnail {
-    height: 112px;
-    width: 142px;
+ul.contact_sheet div.thumbnail {
+    height: 150px;
+    width: 158px;
     display: table-cell;
     vertical-align: middle;
+    text-align: center;
 }
 
-a.thumbnail > img {
-}
-
-th.divider, td.divider {
-    background-color: #666;
-    color: white;
+ul.thumbnails li span.index {
+    float: left;
+    margin-right: -30px;
+    margin-left: 4px;
+    margin-top: 2px;
+    color: #bbb;
     font-weight: bold;
 }
 
-.table-striped tbody tr:nth-child(2n+1) td.divider, .table-striped tbody tr:nth-child(2n+1) th.divider {
-    background-color: #666;
-    color: white;
-    font-weight: bold;
+ul.thumbnails li.highlight {
+    background-color: #eee;
+}
+
+span.inactive {
+    color: #999;
 }

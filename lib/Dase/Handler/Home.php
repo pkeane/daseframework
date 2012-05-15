@@ -13,8 +13,10 @@ class Dase_Handler_Home extends Dase_Handler
 
 	public function getHome($r) 
 	{
-        $item = Dase_DBO_Item::getByName($this->db,'notes');
-        $r->assign('notes',$item->body);
+        $item = Dase_DBO_Item::getBySernum($this->db,'home');
+        if ($item) {
+            $r->assign('notes',$item->body);
+        }
 		$r->renderTemplate('home.tpl');
 	}
 

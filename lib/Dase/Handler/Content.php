@@ -9,17 +9,19 @@ class Dase_Handler_Content extends Dase_Handler
         'items' => 'items',
         'items/thumbnails' => 'items_thumbnails',
         'items/metadata' => 'items_metadata',
-        'item/{id}/metadata' => 'item_metadata',
-        'item/{id}/metadata/{value_id}' => 'item_metadata_value',
-        'item/{id}/metadata/{value_id}/form' => 'item_metadata_value_form',
-        'file/{name}' => 'file',
-        'file/thumb/{name}' => 'thumbnail',
-        'file/view/{name}' => 'view',
-        'item/{name}' => 'item',
-        'item/{id}/edit' => 'item_edit_form',
-        'item/{id}/swap' => 'item_swap_file',
-        'item/{id}/map' => 'item_map',
-        'item/{id}/location' => 'item_location',
+        'items/{id}/metadata' => 'item_metadata',
+        'items/{id}/metadata/{value_id}' => 'item_metadata_value',
+        'items/{id}/metadata/{value_id}/form' => 'item_metadata_value_form',
+        'file/{serial_number}' => 'file',
+        'file/thumb/{serial_number}' => 'thumbnail',
+        'file/view/{serial_number}' => 'view',
+        'item/{serial_number}' => 'item_by_serial_number',
+        'items/{id}' => 'item',
+        'items/{id}/edit' => 'item_edit_form',
+        'items/{id}/edit/metadata' => 'item_edit_metadata_form',
+        'items/{id}/swap' => 'item_swap',
+        'items/{id}/map' => 'item_map',
+        'items/{id}/location' => 'item_location',
         'attribute/{id}' => 'attribute',
         'attribute/{id}/edit' => 'attribute_edit_form',
         'attribute/{id}/input_form' => 'attribute_input_form',
@@ -82,7 +84,7 @@ class Dase_Handler_Content extends Dase_Handler
             $v->text = $r->get('value_text');
             $v->update();
         }
-        $r->renderRedirect('content/item/'.$item->id.'/edit');
+        $r->renderRedirect('content/items/'.$item->id);
     }
 
     public function getItemMetadataValue($r)
@@ -175,7 +177,7 @@ class Dase_Handler_Content extends Dase_Handler
             $v->text = $r->get('value_text');
             $v->insert();
         }
-        $r->renderRedirect('content/item/'.$item->id);
+        $r->renderRedirect('content/items/'.$item->id);
     }
 
     public function getAttributeInputForm($r) 
@@ -230,7 +232,7 @@ class Dase_Handler_Content extends Dase_Handler
         $att->applies_to_type = $r->get('applies_to_type');
         $att->input_type = $r->get('input_type');
         $pattern = '/[\n;]/';
-        $prepared_string = preg_replace($pattern,'%',trim($r->get('values')));
+        $prepared_string = preg_replace($pattern,'%',$r->get('values'));
         $values_array = array();
         foreach (explode('%',$prepared_string) as $v) {
             $values_array[] = trim($v);
@@ -282,7 +284,7 @@ class Dase_Handler_Content extends Dase_Handler
         $item->lat = $r->get('lat');
         $item->lng = $r->get('lng');
         $item->update();
-        $r->renderRedirect('content/item/'.$item->id.'/map');
+        $r->renderRedirect('content/items/'.$item->id.'/map');
     }
 
     public function getAttributes($r)
@@ -320,21 +322,52 @@ class Dase_Handler_Content extends Dase_Handler
         $r->renderTemplate('framework/content_item_edit.tpl');
     }
 
-    public function getItemJson($r) 
+    public function getItemEditMetadataForm($r) 
     {
         $item = new Dase_DBO_Item($this->db);
-        $item->name = $r->get('name');
+        if (!$item->load($r->get('id'))) {
+            $r->renderRedirect('content/items');
+        }
+        $types = new Dase_DBO_Item($this->db);
+        $types->type = 'type';
+        $r->assign('types',$types->findAll(1));
+        $atts = new Dase_DBO_Attribute($this->db);
+        $atts->orderBy('name');
+        $atts = $atts->findAll(1);
+        $item->getMetadata($r);
+        $r->assign('atts',$atts);
+        $r->assign('item',$item);
+        $r->renderTemplate('framework/content_item_edit_metadata.tpl');
+    }
+
+    public function getItemBySerialNumberJson($r) 
+    {
+        $item = new Dase_DBO_Item($this->db);
+        $item->serial_number = $r->get('serial_number');
         if ( $item->findOne()) {
-            $r->renderResponse($item->asJson($r));
+            $r->renderResponse($item->getAsJson($r));
         } else {
             $r->renderError(404);
         }
     }
 
-    public function getItem($r) 
+    public function getItemBySerialNumber($r) 
     {
         $item = new Dase_DBO_Item($this->db);
-        if (!$item->load($r->get('name'))) {
+        $item->serial_number = $r->get('serial_number');
+        if (!$item->findOne()) {
+            $r->renderError(404);
+        }
+        $item->getMetadata($r);
+        $r->assign('item',$item);
+        $r->renderTemplate('framework/content_item.tpl');
+    }
+
+    public function getItem($r) 
+    {
+        //typically NOT used to get item -- see getItems w/ num
+        $item = new Dase_DBO_Item($this->db);
+        if (!$item->load($r->get('id')))  {
             $r->renderError(404);
         }
         $item->getMetadata($r);
@@ -345,7 +378,7 @@ class Dase_Handler_Content extends Dase_Handler
     public function deleteItem($r)
     {
         $item = new Dase_DBO_Item($this->db);
-        if (!$item->load($r->get('name'))) {
+        if (!$item->load($r->get('id'))) {
             $r->renderError(404);
         }
         if (($this->user->eid != $item->created_by) && !$this->user->is_admin) {
@@ -379,10 +412,29 @@ class Dase_Handler_Content extends Dase_Handler
         $item->updated_by = $this->user->eid;
         $item->updated = date(DATE_ATOM);
         $item->update();
-        $r->renderRedirect('content/item/'.$item->id);
+        $r->renderResponse('item updated');
     }
 
-    public function postToItemSwapFile($r)
+    public function getItemSwap($r) 
+    {
+        $item = new Dase_DBO_Item($this->db);
+        if (!$item->load($r->get('id'))) {
+            $r->renderRedirect('content/items');
+        }
+        $r->assign('not_set',$r->get('not_set'));
+        $r->assign('page',$r->get('page'));
+        $r->assign('q',$r->get('q'));
+        $r->assign('att',$r->get('att'));
+        $r->assign('val',$r->get('val'));
+        $r->assign('type',$r->get('type'));
+        $r->assign('max',$r->get('max'));
+        $r->assign('num',$r->get('num'));
+        $r->assign('display',$r->get('display'));
+        $r->assign('item',$item);
+        $r->renderTemplate('framework/content_item_swap.tpl');
+    }
+
+    public function postToItemSwap($r)
     {
         $item = new Dase_DBO_Item($this->db);
         if (!$item->load($r->get('id'))) {
@@ -398,31 +450,42 @@ class Dase_Handler_Content extends Dase_Handler
         } else {
             $r->renderError(400);
         }
-        $item->url = 'content/item/'.$item->name;
+        $item->url = 'content/item/'.$item->serial_number;
         $item->updated_by = $this->user->eid;
         $item->updated = date(DATE_ATOM);
         $item->update();
-        $r->renderRedirect('content/item/'.$item->id);
+        if ($r->get('not_set')) {
+            $r->renderRedirect('content/items/'.$item->id);
+        }
+        $params['page'] = $r->get('page');
+        $params['q'] = $r->get('q');
+        $params['att'] = $r->get('att');
+        $params['val'] = $r->get('val');
+        $params['type'] = $r->get('type');
+        $params['max'] = $r->get('max');
+        $params['num'] = $r->get('num');
+        $params['display'] = $r->get('display');
+        $r->renderRedirect('content/items',$params);
     }
 
     public function getFile($r) 
     { 
         $media_dir = $this->config->getMediaDir();
-        $file_path = $media_dir.'/'.$r->get('name').'.'.$r->ext;
+        $file_path = $media_dir.'/'.$r->get('serial_number').'.'.$r->ext;
         $r->serveFile($file_path,$r->mime);
     }
 
     public function getThumbnail($r) 
     { 
         $media_dir = $this->config->getMediaDir();
-        $file_path = $media_dir.'/thumb/'.$r->get('name').'.'.$r->ext;
+        $file_path = $media_dir.'/thumb/'.$r->get('serial_number').'.'.$r->ext;
         $r->serveFile($file_path,$r->mime);
     }
 
     public function getView($r) 
     { 
         $media_dir = $this->config->getMediaDir();
-        $file_path = $media_dir.'/view/'.$r->get('name').'.'.$r->ext;
+        $file_path = $media_dir.'/view/'.$r->get('serial_number').'.'.$r->ext;
         $r->serveFile($file_path,$r->mime);
     }
 
@@ -440,7 +503,7 @@ class Dase_Handler_Content extends Dase_Handler
 
         public function getThumbnailJpg($r) { 
             $media_dir = $this->config->getMediaDir();
-            $file_path = $media_dir.'/thumb/'.$r->get('name').'.'.$r->ext;
+            $file_path = $media_dir.'/thumb/'.$r->get('serial_number').'.'.$r->ext;
             if (!is_file($file_path)) {
                 $file_path = BASE_PATH.'/www/img/missing.jpg';
             }
@@ -483,57 +546,101 @@ class Dase_Handler_Content extends Dase_Handler
         $item->body = $r->get('body');
         $item->title = $r->get('title');
         $item->type = $r->get('type');
+        $item->serial_number = Dase_DBO_Item::getUniqueSerialNumber($this->db,$r->get('preferred_sernum'));
+        if (!$item->title) {
+            $item->title = $item->serial_number;
+        }
 
         $file = $r->getFile('uploaded_file');
         if ($file && $file->isValid()) {
-            $item->name = $item->processUploadedFile($file);
-            if (!$item->title) {
-                $item->title = $item->name;
-            }
+            $item->processUploadedFile($file);
         } else {
-            if (!$item->title) {
-                $item->title = substr($item->body,0,20);
-            }
-            if (!$item->title) {
-                $params['msg'] = "title or body is required if no file is uploaded";
-                $r->renderRedirect('content',$params);
-            }
-            $item->name = Dase_DBO_Item::findUniqueName($this->db,Dase_Util::dirify($item->title));
-            //$item->thumbnail_url = 	'www/img/mime_icons/content.png';
+            $item->thumbnail_url = 	'www/img/mime_icons/content.png';
         }
         $item->created_by = $this->user->eid;
         $item->created = date(DATE_ATOM);
         $item->updated_by = $this->user->eid;
         $item->updated = date(DATE_ATOM);
-        $item->url = 'content/item/'.$item->name;
+        $item->url = 'content/item/'.$item->serial_number;
         $item->insert();
-
         $r->renderRedirect('content/items');
     }
 
     public function getItems($r) 
     {
-        $atts = new Dase_DBO_Attribute($this->db);
-        $atts->orderBy('name');
-        $atts = $atts->findAll(1);
-        $r->assign('atts',$atts);
-
         $items = Dase_DBO_Item::retrieveSet($this->db,$r);
-        $max = $r->get('max') ? $r->get('max') : 36;
-        $start = $r->get('start') ? $r->get('start') : 1;
+
+        //total == how many items total (unpaged) this search returns
+        $total = count($items);
+
+        //max == mximun # of items shown on a page
+        $max = $r->get('max') ? $r->get('max') : 60;
+
+        //page == which page we are on
+        if ($r->get('page')) {
+            $page = $r->get('page');
+        } else {
+            $page = 1;
+        }
+        $r->assign('page',$page);
+
+        //start = number (w/in total result) of first item on page
+        if (1 == $page) {
+            $start = 1;
+        } else {
+            $start = (($page-1) * $max)+1;
+        }
+
+        //$start = $r->get('start') ? $r->get('start') : 1;
+
+        //end = number (w/in total result) of last item on page 
+        $end = $start + $max - 1;
+
+        if ($total < $end) {
+            $end = $total;
+        }
+
+        $total_pages = ceil(($total/$max)-.001);
+
+        if ($total_pages < 11) {
+            $paginated = $total_pages;
+        } else {
+            $paginated = 10;
+        }
+
+        $r->assign('paginated',$paginated);
+        $r->assign('total_pages',$total_pages);
+        $r->assign('end',$end);
+        $r->assign('start',$start);
+        $r->assign('max',$max);
+        $r->assign('total',$total);
+
+        if ($r->get('curr')) {
+            $r->assign('curr',$r->get('curr'));
+        }
+
+        if ($r->get('num')) {
+            $num = $r->get('num');
+            $r->assign('num',$num);
+            $r->assign('display',$r->get('display'));
+            //because items is indexed w/ item id
+            $slice = array_slice($items,$num-1,1);
+            $item = array_pop($slice);
+            $item->getMetadata($r);
+            $r->assign('item',$item);
+            $r->assign('is_set',1);
+            $r->renderTemplate('framework/content_item.tpl');
+        }
+
         $items = array_slice($items,$start-1,$max);
         $r->assign('items',$items);
-        $r->renderTemplate('framework/content_items.tpl');
-    }
 
-    public function getItemsThumbnails($r) 
-    {
-        $items = Dase_DBO_Item::retrieveSet($this->db,$r);
-        $max = $r->get('max') ? $r->get('max') : 36;
-        $start = $r->get('start') ? $r->get('start') : 1;
-        $items = array_slice($items,$start-1,$max);
-        $r->assign('items',$items);
-        $r->renderTemplate('framework/content_items_thumbs.tpl');
+        if ('table' == $r->get('display')) {
+            $r->assign('display','table');
+            $r->renderTemplate('framework/content_items_table.tpl');
+        } else {
+            $r->renderTemplate('framework/content_items_thumbs.tpl');
+        }
     }
 
     public function getItemsJson($r) 
@@ -543,7 +650,7 @@ class Dase_Handler_Content extends Dase_Handler
         $set = array();
         foreach ($items->find() as $item) {
             $item = clone($item);
-            $set[] = $item->asArray($r);
+            $set[] = $item->getAsArray($r);
         }
         $r->renderResponse(Dase_Json::get($set));
     }
@@ -560,19 +667,17 @@ class Dase_Handler_Content extends Dase_Handler
         $bits = $r->getBody();
         $file_meta = Dase_File::$types_map[$mime_type];
         $ext = $file_meta['ext'];
-        $title = '';
         if ( $r->http_title ) {
-            $title = $r->http_title;
+            $item->title = $r->http_title;
         } elseif ( $r->slug ) {
-            $title = $r->slug;
-        } else {
-            $title = dechex(time());
-        }
-        $item->title = $title;
+            $item->title = $r->slug;
+        } 
+        $item->serial_number = Dase_DBO_Item::getUniqueSerialNumber($this->db,$item->title);
+        if (!$item->title) {
+            $item->title = $item->serial_number;
+        } 
         $media_dir = $this->config->getMediaDir();
-        $basename = Dase_DBO_Item::findUniqueName($this->db,Dase_Util::dirify($title));
-        $name = Dase_File::findNextUnique($media_dir,$basename,$ext);
-        $file_path = $media_dir.'/'.$name;
+        $file_path = $media_dir.'/'.$item->serial_number.'.'.$ext;
         $ifp = @ fopen( $file_path, 'wb' );
         if (!$ifp) {
             $r->log->debug('cannot write file '.$file_path);
@@ -587,14 +692,11 @@ class Dase_Handler_Content extends Dase_Handler
         if (isset($size[0]) && $size[0]) { $item->width = $size[0]; }
         if (isset($size[1]) && $size[1]) { $item->height = $size[1]; }
 
-            $item->name = $name;
-        if (!$item->title) {
-            $item->title = $item->name;
-        }
         $item->file_ext = $ext;
         $item->file_path = $file_path;
-        $item->file_url = 'content/file/'.$item->name;
+        $item->file_url = 'content/file/'.$item->serial_number;
         $item->filesize = filesize($file_path);
+        $this->file_original_name = $item->title;
         $item->mime = $mime_type;
         $item->makeDerivatives($media_dir);
 
@@ -602,7 +704,7 @@ class Dase_Handler_Content extends Dase_Handler
         $item->created = date(DATE_ATOM);
         $item->updated_by = $this->user->eid;
         $item->updated = date(DATE_ATOM);
-        $item->url = 'content/item/'.$item->name;
+        $item->url = 'content/item/'.$item->serial_number;
         if ($item->insert()) {
             $r->renderOk('added item');
         } else {
@@ -640,36 +742,36 @@ class Dase_Handler_Content extends Dase_Handler
             $mime_type = Dase_Request::$types[$ext];
             $media_dir = $this->config->getMediaDir();
             $basename = Dase_Util::dirify(pathinfo($file_url,PATHINFO_FILENAME));
-            $name = Dase_File::findNextUnique($media_dir,$basename,$ext);
-            $file_path = $media_dir.'/'.$name;
+            $item->serial_number = Dase_File::findUniqueSerialNumber($this->db,$basename);
+            $file_path = $media_dir.'/'.$item->serial_number.'.'.$ext;
             //move file to new home
             file_put_contents($file_path,file_get_contents($file_url));
             chmod($file_path,0775);
             $size = @getimagesize($file_path);
             if (isset($size[0]) && $size[0]) { $item->width = $size[0]; }
             if (isset($size[1]) && $size[1]) { $item->height = $size[1]; }
-                $item->name = $name;
             if (!$item->title) {
-                $item->title = $item->name;
+                $item->title = $item->serial_number;
             }
             $item->file_ext = $ext;
             $item->file_path = $file_path;
-            $item->file_url = 'content/file/'.$item->name;
+            $item->file_url = 'content/file/'.$item->serial_number;
             $item->filesize = filesize($file_path);
+            $item->file_original_name = $basename.'.'.$ext;
             $item->mime = $mime_type;
             $item->makeDerivatives($media_dir);
         } else { //meaning no file
+            $item->serial_number = Dase_File::findUniqueSerialNumber($this->db);
             if (!$item->title) {
-                $item->title = substr($item->body,0,20);
+                $item->title = $item->serial_number;
             }
-            $item->name = Dase_DBO_Item::findUniqueName($this->db,Dase_Util::dirify($item->title));
             $item->thumbnail_url = 	'www/img/mime_icons/content.png';
         }
         $item->created_by = $this->user->eid;
         $item->created = date(DATE_ATOM);
         $item->updated_by = $this->user->eid;
         $item->updated = date(DATE_ATOM);
-        $item->url = 'item/'.$item->name;
+        $item->url = 'item/'.$item->serial_number;
         if ($item->insert()) {
             $r->renderOk('added item');
         } else {

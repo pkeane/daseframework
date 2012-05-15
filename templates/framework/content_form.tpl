@@ -13,13 +13,13 @@
     <div class="control-group">
         <label class="control-label" for="input-title">Title</label>
         <div class="controls">
-            <input type="text" class="span10" name="title" value="{{ item.title }}" id="input-title">
+            <input type="text" class="span10" name="title" id="input-title">
         </div>
     </div>
     <div class="control-group">
         <label class="control-label" for="input-body">Body</label>
         <div class="controls">
-            <textarea class="span10" rows="5" name="body" id="input-body">{{ item.body }}</textarea>
+            <textarea class="span10" rows="5" name="body" id="input-body"></textarea>
         </div>
     </div>
     <div class="control-group">
@@ -39,6 +39,13 @@
         <label class="control-label" for="input-file">Attached File</label>
         <div class="controls">
             <input type="file" name="uploaded_file"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="input-preferred_sernum">Preferred Serial Number</label>
+        <div class="controls">
+            <input type="text" class="span1" name="preferred_sernum" id="input-preferred_sernum">
         </div>
     </div>
 

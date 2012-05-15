@@ -48,7 +48,7 @@
                         {% if request.user.is_admin %}
                         <li {% if request.handler == 'admin' %}class="active"{% endif %}><a href="admin">Admin</a></li>
                         {% endif %}
-                        <li {% if request.handler == 'content' %}class="active"{% endif %}><a href="content/items/thumbnails">Content</a></li>
+                        <li {% if request.handler == 'content' %}class="active"{% endif %}><a href="content/items">Content</a></li>
                     </ul>
                     {% if request.user %}
                     <div class="navbar-text pull-right" id="login">

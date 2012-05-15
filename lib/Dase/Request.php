@@ -123,7 +123,7 @@ class Dase_Request
         if ($this->sf_request->query->has($key)) {
             return true;
         }
-        if ($this->params[$key]) {
+        if (isset($this->params[$key])) {
             return true;
         }
         return false;
@@ -148,19 +148,19 @@ class Dase_Request
     public function get($key)
     {
         if ($this->sf_request->request->has($key)) {
-            return $this->sf_request->request->filter($key);
+            return trim($this->sf_request->request->filter($key));
         }
         if ($this->sf_request->query->has($key)) {
-            return $this->sf_request->query->filter($key);
+            return trim($this->sf_request->query->filter($key));
         }
-        if ($this->params[$key]) {
-            return $this->params[$key];
+        if (isset($this->params[$key])) {
+            return trim($this->params[$key]);
         }
     }
 
     public function getBody()
     {
-        return $this->sf_request->getContent();
+        return trim($this->sf_request->getContent());
     }
 
     public function __call( $method,$args ) 
@@ -198,7 +198,8 @@ class Dase_Request
     {
         $pathinfo = $this->sf_request->getPathInfo();
         if (strpos($pathinfo,'.')) {
-            $ext = array_pop(explode('.',$this->sf_request->getPathInfo()));
+            $exploded = explode('.',$this->sf_request->getPathInfo());
+            $ext = array_pop($exploded);
         } else {
             $ext = 'html'; 
         }
