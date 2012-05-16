@@ -545,7 +545,7 @@ class Dase_Handler_Content extends Dase_Handler
             }
             $r->serveFile($file_path,$r->mime);
         }
-        public function getThumbnailGif($r) { return $this->getThumbnail($r); }
+    public function getThumbnailGif($r) { return $this->getThumbnail($r); }
         public function getThumbnailPng($r) { return $this->getThumbnail($r); }
         public function getThumbnailTxt($r) { return $this->getThumbnail($r); }
         public function getThumbnailPdf($r) { return $this->getThumbnail($r); }
@@ -610,7 +610,7 @@ class Dase_Handler_Content extends Dase_Handler
         $total = count($items);
 
         if (0 == $total) {
-           // $r->renderTemplate('framework/content_items_thumbs.tpl');
+            // $r->renderTemplate('framework/content_items_thumbs.tpl');
         }
 
         //max == mximun # of items shown on a page
@@ -735,9 +735,9 @@ class Dase_Handler_Content extends Dase_Handler
         if (isset($size[0]) && $size[0]) { $item->width = $size[0]; }
         if (isset($size[1]) && $size[1]) { $item->height = $size[1]; }
 
-        $item->file_ext = $ext;
+            $item->file_ext = $ext;
         $item->file_path = $file_path;
-        $item->file_url = 'content/file/'.$item->serial_number;
+        $item->file_url = 'content/file/'.$item->serial_number.'.'.$ext;
         $item->filesize = filesize($file_path);
         $this->file_original_name = $item->title;
         $item->mime = $mime_type;
@@ -772,7 +772,7 @@ class Dase_Handler_Content extends Dase_Handler
         $json_data = Dase_Json::toPhp($r->getBody());
         if (!isset($json_data['title'])) {
             $json_data['title'] = $json_data['id'];
-        //    $r->renderError(415,'incorrect json format');
+            //    $r->renderError(415,'incorrect json format');
         }
         //create new item
         $item = new Dase_DBO_Item($this->db);
@@ -780,6 +780,9 @@ class Dase_Handler_Content extends Dase_Handler
         $item->title = $json_data['title'];
         if (isset($json_data['body'])) {
             $item->body = $json_data['body'];
+        }
+        if (isset($json_data['enclosure']) && isset($json_data['enclosure']['href'])) {
+            $json_data['links']['file'] = $json_data['app_root'].$json_data['enclosure']['href'];
         }
         if (isset($json_data['links']['file'])) {
             $file_url = $json_data['links']['file'];
@@ -794,12 +797,12 @@ class Dase_Handler_Content extends Dase_Handler
             $size = @getimagesize($file_path);
             if (isset($size[0]) && $size[0]) { $item->width = $size[0]; }
             if (isset($size[1]) && $size[1]) { $item->height = $size[1]; }
-            if (!$item->title) {
-                $item->title = $item->serial_number;
-            }
+                if (!$item->title) {
+                    $item->title = $item->serial_number;
+                }
             $item->file_ext = $ext;
             $item->file_path = $file_path;
-            $item->file_url = 'content/file/'.$item->serial_number;
+            $item->file_url = 'content/file/'.$item->serial_number.'.'.$ext;
             $item->filesize = filesize($file_path);
             $item->file_original_name = $basename.'.'.$ext;
             $item->mime = $mime_type;
@@ -814,7 +817,7 @@ class Dase_Handler_Content extends Dase_Handler
         $item->created = date(DATE_ATOM);
         $item->updated_by = $this->user->eid;
         $item->updated = date(DATE_ATOM);
-        $item->url = 'item/'.$item->serial_number;
+        $item->url = 'content/item/'.$item->serial_number;
         if ($item->insert()) {
             //prob should happen earlier
             if (isset($json_data['metadata'])) {

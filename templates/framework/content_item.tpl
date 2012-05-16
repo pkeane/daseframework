@@ -39,7 +39,7 @@
         {% endfor %}
         {% endfor %}
         <dt>----</dt><dd>----</dd>
-        <dt>Permalink</dt><dd><a href="{{ app_root }}/content/items/{{ item.id }}">{{ app_root }}/content/items/{{ item.id }}</a></dd>
+        <dt>Permalink</dt><dd><a href="{{ app_root }}/content/item/{{ item.serial_number }}">{{ app_root }}/content/item/{{ item.serial_number }}</a></dd>
         <dt>Serial Number</dt><dd>{{ item.serial_number }}</dd>
         <dt>Title</dt><dd>{{ item.title }}</dd>
         <dt>Body</dt><dd>{{ item.body }}</dd>

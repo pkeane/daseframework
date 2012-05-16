@@ -91,7 +91,10 @@ class Dase_Request
 
     public function getContentType()
     {
-        return $this->mime;
+        $ct = $this->sf_request->headers->get('content_type');
+        $parts = explode(';',$ct);
+        $content_type = array_shift($parts);
+        return $content_type;
     }
 
 	public function init($db,$config,$template)
