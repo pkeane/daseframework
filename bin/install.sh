@@ -10,6 +10,8 @@ mkdir ../files
 mkdir ../files/log
 mkdir ../files/cache
 mkdir ../files/media
+mkdir ../files/media/thumb
+mkdir ../files/media/view
 chgrp -R apache ../files/*
 chmod -R g+w ../files/*
 
