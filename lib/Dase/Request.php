@@ -89,6 +89,11 @@ class Dase_Request
         $this->log->pushHandler(new StreamHandler(LOG_FILE,LOG_LEVEL));
 	}
 
+    public function getContentType()
+    {
+        return $this->mime;
+    }
+
 	public function init($db,$config,$template)
 	{
 		$this->template = $template;

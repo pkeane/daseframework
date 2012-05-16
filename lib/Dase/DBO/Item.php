@@ -168,6 +168,16 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         return $row;
     }
 
+    public function setValue($r,$att_ascii,$value_text)
+    {
+        $att = Dase_DBO_Attribute::findOrCreate($r,$this->db,$att_ascii);
+        $v = new Dase_DBO_Value($this->db);
+        $v->item_id = $this->id;
+        $v->attribute_id = $att->id;
+        $v->text = $value_text;
+        $v->insert();
+    }
+
     public function expunge()
     {
         $this->deleteMedia();

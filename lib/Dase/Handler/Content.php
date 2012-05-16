@@ -708,11 +708,13 @@ class Dase_Handler_Content extends Dase_Handler
         $bits = $r->getBody();
         $file_meta = Dase_File::$types_map[$mime_type];
         $ext = $file_meta['ext'];
+        /*
         if ( $r->http_title ) {
             $item->title = $r->http_title;
         } elseif ( $r->slug ) {
             $item->title = $r->slug;
         } 
+         */
         $item->serial_number = Dase_DBO_Item::getUniqueSerialNumber($this->db,$item->title);
         if (!$item->title) {
             $item->title = $item->serial_number;
@@ -769,10 +771,12 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $json_data = Dase_Json::toPhp($r->getBody());
         if (!isset($json_data['title'])) {
-            $r->renderError(415,'incorrect json format');
+            $json_data['title'] = $json_data['id'];
+        //    $r->renderError(415,'incorrect json format');
         }
         //create new item
         $item = new Dase_DBO_Item($this->db);
+        $item->serial_number = Dase_DBO_Item::getUniqueSerialNumber($this->db);
         $item->title = $json_data['title'];
         if (isset($json_data['body'])) {
             $item->body = $json_data['body'];
@@ -783,7 +787,6 @@ class Dase_Handler_Content extends Dase_Handler
             $mime_type = Dase_Request::$types[$ext];
             $media_dir = $this->config->getMediaDir();
             $basename = Dase_Util::dirify(pathinfo($file_url,PATHINFO_FILENAME));
-            $item->serial_number = Dase_File::findUniqueSerialNumber($this->db,$basename);
             $file_path = $media_dir.'/'.$item->serial_number.'.'.$ext;
             //move file to new home
             file_put_contents($file_path,file_get_contents($file_url));
@@ -802,7 +805,6 @@ class Dase_Handler_Content extends Dase_Handler
             $item->mime = $mime_type;
             $item->makeDerivatives($media_dir);
         } else { //meaning no file
-            $item->serial_number = Dase_File::findUniqueSerialNumber($this->db);
             if (!$item->title) {
                 $item->title = $item->serial_number;
             }
@@ -814,6 +816,14 @@ class Dase_Handler_Content extends Dase_Handler
         $item->updated = date(DATE_ATOM);
         $item->url = 'item/'.$item->serial_number;
         if ($item->insert()) {
+            //prob should happen earlier
+            if (isset($json_data['metadata'])) {
+                foreach ($json_data['metadata'] as $att_ascii => $vals) {
+                    foreach ($vals as $val) {
+                        $item->setValue($r,$att_ascii,$val);
+                    }
+                }
+            }
             $r->renderOk('added item');
         } else {
             $r->renderError(400);

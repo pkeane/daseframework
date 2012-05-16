@@ -24,4 +24,20 @@ class Dase_DBO_Attribute extends Dase_DBO_Autogen_Attribute
         }
     }
 
+    public static function findOrCreate($r,$db,$att_ascii) 
+    {
+        $att = new Dase_DBO_Attribute($db);
+        $att->ascii_id = $att_ascii;
+        if ($att->findOne()) {
+            return $att;
+        } else {
+            $att->name = Dase_Util::undirify($att->ascii_id);;
+            $att->input_type = 'text';
+            $att->created = date(DATE_ATOM);
+            $att->created_by = $r->getUser()->eid;
+            $att->insert();
+            return $att;
+        }
+    }
+
 }
