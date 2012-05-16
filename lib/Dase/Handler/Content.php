@@ -667,10 +667,12 @@ class Dase_Handler_Content extends Dase_Handler
             //because items is indexed w/ item id
             $slice = array_slice($items,$num-1,1);
             $item = array_pop($slice);
-            $item->getMetadata($r);
-            $r->assign('item',$item);
-            $r->assign('is_set',1);
-            $r->renderTemplate('framework/content_item.tpl');
+						if ($item) {
+								$item->getMetadata($r);
+								$r->assign('item',$item);
+								$r->assign('is_set',1);
+								$r->renderTemplate('framework/content_item.tpl');
+						} 
         }
 
         $items = array_slice($items,$start-1,$max);
