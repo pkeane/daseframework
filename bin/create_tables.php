@@ -13,6 +13,7 @@ $sql = "
         `values_item_type` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
         `values_json` text COLLATE utf8_unicode_ci,
         `input_type` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+        `applies_to_type` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 ";
@@ -26,7 +27,7 @@ if ($sth->execute()) {
 $sql = "
     CREATE TABLE IF NOT EXISTS `item` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
-        `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+        `serial_number` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
         `title` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
         `type` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
         `body` text COLLATE utf8_unicode_ci,
@@ -39,6 +40,7 @@ $sql = "
         `view_path` varchar(400) COLLATE utf8_unicode_ci DEFAULT NULL,
         `filesize` int(11) DEFAULT NULL,
         `file_ext` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+        `file_original_name` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
         `mime` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
         `width` int(11) DEFAULT NULL,
         `height` int(11) DEFAULT NULL,
