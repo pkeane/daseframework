@@ -482,7 +482,7 @@ class Dase_Handler_Content extends Dase_Handler
         $file = $r->getFile('uploaded_file');
         if ($file && $file->isValid()) {
             $item->deleteMedia();
-            $item->processUploadedFile($file);
+            $item->processUploadedFile($r,$file);
         } else {
             $r->renderError(400);
         }
@@ -589,7 +589,7 @@ class Dase_Handler_Content extends Dase_Handler
 
         $file = $r->getFile('uploaded_file');
         if ($file && $file->isValid()) {
-            $item->processUploadedFile($file);
+            $item->processUploadedFile($r,$file);
         } else {
             $item->thumbnail_url = 	'www/img/mime_icons/content.png';
         }
@@ -741,7 +741,7 @@ class Dase_Handler_Content extends Dase_Handler
         $item->filesize = filesize($file_path);
         $this->file_original_name = $item->title;
         $item->mime = $mime_type;
-        $item->makeDerivatives($media_dir);
+        $item->makeDerivatives($r,$media_dir);
 
         $item->created_by = $this->user->eid;
         $item->created = date(DATE_ATOM);
@@ -806,7 +806,7 @@ class Dase_Handler_Content extends Dase_Handler
             $item->filesize = filesize($file_path);
             $item->file_original_name = $basename.'.'.$ext;
             $item->mime = $mime_type;
-            $item->makeDerivatives($media_dir);
+            $item->makeDerivatives($r,$media_dir);
         } else { //meaning no file
             if (!$item->title) {
                 $item->title = $item->serial_number;

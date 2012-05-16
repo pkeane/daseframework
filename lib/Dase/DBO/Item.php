@@ -221,7 +221,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         $this->update();
     }
 
-    public function processUploadedFile(Symfony\Component\HttpFoundation\File\UploadedFile $file) 
+    public function processUploadedFile($r,Symfony\Component\HttpFoundation\File\UploadedFile $file) 
     {
         $orig_name = $file->getClientOriginalName();
         $path = $file->getPathName();
@@ -268,10 +268,10 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         $this->file_original_name = $orig_name;
         $this->mime = $mime;
 
-        $this->makeDerivatives($media_dir);
+        $this->makeDerivatives($r,$media_dir);
     }
 
-    public function makeDerivatives($media_dir) 
+    public function makeDerivatives($r,$media_dir) 
     {
         $thumb_dir = $media_dir.'/thumb';
         if (!file_exists($thumb_dir) || !is_writeable($thumb_dir)) {
