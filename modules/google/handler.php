@@ -52,6 +52,10 @@ class Dase_ModuleHandler_Google extends Dase_Handler
             if (!$db_user->retrieveByEid($eid)) {
                 $db_user->eid = strtolower($eid); 
                 $db_user->name = $first.' '.$last; 
+								//I thnk OK if not all db_user impl have this 'is_admin' column 
+								if (0 == $db_user->getUserCount()) {
+										$db_user->is_admin = 1;
+								}
                 $db_user->insert();
             }
 
