@@ -89,9 +89,9 @@
         <div class="caption">
             <p>
             {% if is_set %}
-            <a href="content/items/{{ item.id }}/swap?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num }}&amp;display={{ display }}" id="edit-item-swap" class="btn btn-warning">swap image</a>
+            <a href="content/items/{{ item.id }}/swap?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ num }}&amp;display={{ display }}" id="edit-item-swap" class="btn btn-warning">{% if item.file_url %}swap{% else %}add{% endif %} image</a>
             {% else %}
-            <a href="content/items/{{ item.id }}/swap?not_set=1" id="edit-item-swap" class="btn btn-warning">swap image</a>
+            <a href="content/items/{{ item.id }}/swap?not_set=1" id="edit-item-swap" class="btn btn-warning">{% if item.file_url %}swap{% else %}add{% endif %} image</a>
             {% endif %}
             </p>
         </div>

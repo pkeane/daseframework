@@ -86,9 +86,35 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             $sth->setFetchMode(PDO::FETCH_INTO,$item);
             $sth->execute($exec_array);
             while ($item = $sth->fetch()) {
-                $items[] = clone($item);
+                $item = clone($item);
+                $items[$item->id] = $item;
             }
-            //$items = $sth->fetchAll();
+            /** now values table **/
+            $exec_array = array($q);
+            $sql = "
+                SELECT item.*
+                FROM item,value
+                WHERE value.text like ? 
+                AND value.item_id = item.id 
+                ";
+            if ($type) {
+                $sql .= "AND item.type = ?";
+                $exec_array[] = $type;
+                   
+            }
+            if ($sort) {
+                $sql .= "ORDER BY item.$sort";
+            } else {
+                $sql .= "ORDER BY item.id DESC"; 
+            }
+            $item = new Dase_DBO_Item($db);
+            $sth = $db->getDbh()->prepare($sql);
+            $sth->setFetchMode(PDO::FETCH_INTO,$item);
+            $sth->execute($exec_array);
+            while ($item = $sth->fetch()) {
+                $item = clone($item);
+                $items[$item->id] = $item;
+            }
         } else {
             //only deal w/ sort & type
             $items = new Dase_DBO_Item($db);

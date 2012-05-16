@@ -14,7 +14,7 @@
     <input type="hidden" value="{{ max }}" name="max">
     <input type="hidden" value="{{ num }}" name="num">
     <input type="hidden" value="{{ display }}" name="display">
-    <input type="submit" class="btn btn-warning" value="swap in file"/>
+    <input type="submit" class="btn btn-primary" value="swap in file"/>
     {% else %}
     <h3>Add File</h3>
     <input type="file" name="uploaded_file"/>
@@ -27,7 +27,7 @@
     <input type="hidden" value="{{ max }}" name="max">
     <input type="hidden" value="{{ num }}" name="num">
     <input type="hidden" value="{{ display }}" name="display">
-    <input type="submit" class="btn btn-warning" value="add file"/>
+    <input type="submit" class="btn btn-primary" value="add file"/>
     {% endif %}
 </form>
 

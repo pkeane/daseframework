@@ -50,7 +50,6 @@
         <th>file url</th>
         <th>view url</th>
         <th></th>
-        <th></th>
     </tr>
     {% for item in items %}
     <tr>
@@ -58,7 +57,7 @@
     <td><a href="content/items?page={{ page }}&amp;q={{ q }}&amp;att={{ att }}&amp;val={{ val }}&amp;type={{ type }}&amp;max={{ max }}&amp;num={{ loop.index + start -1 }}&amp;display={{ display }}">{{ item.title }}</a></td>
 
         <td>
-            <a href="content/items/thumbnails?type={{ item.type }}">{{ item.type }}</a>
+            <a href="content/items?type={{ item.type }}">{{ item.type }}</a>
         </td>
         <td>
             {{ item.created|date("Y-m-d") }}
@@ -71,9 +70,6 @@
         </td>
         <td>
             <a href="{{ item.view_url }}">{{ item.view_url }}</a>
-        </td>
-        <td>
-            <a href="content/item/{{ item.id }}/edit" class="btn btn-warning">edit</a>
         </td>
         <td>
             <a href="{{ item.url }}.json" class="btn btn-info">json</a>
