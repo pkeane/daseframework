@@ -39,7 +39,7 @@
         {% endfor %}
         {% endfor %}
         <dt>----</dt><dd>----</dd>
-        <dt>Permalink</dt><dd><a href="{{ app_root }}/content/item/{{ item.serial_number }}">{{ app_root }}/content/item/{{ item.serial_number }}</a></dd>
+        <dt>Permalink</dt><dd><a href="{{ app_root }}/content/item/{{ item.serial_number }}">content/item/{{ item.serial_number }}</a></dd>
         <dt>Serial Number</dt><dd>{{ item.serial_number }}</dd>
         <dt>Title</dt><dd>{{ item.title }}</dd>
         <dt>Body</dt><dd>{{ item.body }}</dd>
@@ -51,6 +51,7 @@
         <dt>View Url</dt><dd><a href="{{ item.view_url }}">{{ item.view_url }}</a></dd>
         <dt>Filesize</dt><dd>{{ item.filesize }}</dd>
         <dt>File Ext</dt><dd>{{ item.file_ext }}</dd>
+        <dt>File Original Name</dt><dd>{{ item.file_original_name }}</dd>
         <dt>Mime</dt><dd>{{ item.mime }}</dd>
         <dt>Width</dt><dd>{{ item.width }}</dd>
         <dt>Height</dt><dd>{{ item.height }}</dd>
