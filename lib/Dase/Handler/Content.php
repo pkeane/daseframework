@@ -783,6 +783,9 @@ class Dase_Handler_Content extends Dase_Handler
         if (isset($json_data['body'])) {
             $item->body = $json_data['body'];
         }
+        if (isset($json_data['type'])) {
+            $item->type = $json_data['type'];
+        }
         if (isset($json_data['enclosure']) && isset($json_data['enclosure']['href'])) {
             $json_data['links']['file'] = $json_data['app_root'].$json_data['enclosure']['href'];
         }

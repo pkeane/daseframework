@@ -5,7 +5,7 @@ Options FollowSymLinks
 FileETag none
 
 RewriteEngine On
-RewriteBase  /dev_pkeane/daseframework  
+RewriteBase  /newdase  
 
 php_flag magic_quotes_gpc off
 
