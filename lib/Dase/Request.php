@@ -78,6 +78,8 @@ class Dase_Request
         $this->format = $this->sf_request->getRequestFormat($this->ext);
         $this->method = strtolower($this->sf_request->getMethod());
         $this->mime = $this->sf_request->getMimeType($this->format);
+				$this->htuser = $this->sf_request->server->get('PHP_AUTH_USER');
+				$this->htpass = $this->sf_request->server->get('PHP_AUTH_PW');
         $this->handler = $this->getHandler($this->path);
         $this->handler_path = $this->handler;
         $this->app_root =
