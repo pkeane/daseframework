@@ -2,12 +2,12 @@
 
 {% block content %}
 <div class="pull-right">
-<form action="content/items" class="form-inline" method="get">
-    <input type="text" name="q" value="{{ q }}">
-    <input type="submit" value="search" class="btn btn-primary">
-    <a href="content/create" class="btn btn-primary">create content</a>
-    <a href="content/attributes" class="btn btn-primary">manage attributes</a>
-</form>
+    <form action="content/items" class="form-inline" method="get">
+        <input type="text" name="q" value="{{ q }}">
+        <input type="submit" value="search" class="btn btn-primary">
+        <a href="content/create" class="btn btn-primary">create content</a>
+        <a href="content/attributes" class="btn btn-primary">manage attributes</a>
+    </form>
 </div>
 
 
