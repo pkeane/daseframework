@@ -1,8 +1,5 @@
 <?php
 
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
 class Dase_Cache_File extends Dase_Cache 
 {
 	private $cache_dir;
@@ -18,8 +15,7 @@ class Dase_Cache_File extends Dase_Cache
 		$this->cache_dir = $config->getCacheDir();
 		$this->ttl = $ttl;
 		$this->_initDir();
-        $this->log = new Logger('cache');
-        $this->log->pushHandler(new StreamHandler(LOG_FILE,LOG_LEVEL));
+        $this->log = Dase_Logger::instance(LOG_DIR,LOG_LEVEL);
 	}
 
 	private function _initDir()
@@ -112,7 +108,7 @@ class Dase_Cache_File extends Dase_Cache
 			@unlink($filepath);
 			return false;
 		}
-		$this->log->debug('cache HIT!!! '.$filepath);
+		$this->log->logDebug('cache HIT!!! '.$filepath);
 		return file_get_contents($filepath);
 	}
 

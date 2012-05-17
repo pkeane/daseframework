@@ -9,7 +9,6 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
     'Symfony' => BASE_PATH.'/lib',
-    'Monolog' => BASE_PATH.'/lib',
 ));
 $loader->registerPrefixes(array(
     'Twig_Extensions_' => BASE_PATH.'/lib',

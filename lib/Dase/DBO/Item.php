@@ -291,7 +291,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             $exec_output = array();
             $results = exec($command,$exec_output);
             if (!file_exists($thumb_path)) {
-                $this->log->info("failed to write $thumb_path");
+                $this->log->logInfo("failed to write $thumb_path");
             }
             chmod($thumb_path,0775);
             $this->thumbnail_url = 'content/file/thumb/'.$this->serial_number.'.jpg';
@@ -304,7 +304,7 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             $exec_output = array();
             $results = exec($command,$exec_output);
             if (!file_exists($view_path)) {
-                $this->log->info("failed to write $view_path");
+                $this->log->logInfo("failed to write $view_path");
             }
             chmod($view_path,0775);
             $this->view_url = 'content/file/view/'.$this->serial_number.'.jpg';

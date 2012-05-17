@@ -725,7 +725,7 @@ class Dase_Handler_Content extends Dase_Handler
         $file_path = $media_dir.'/'.$item->serial_number.'.'.$ext;
         $ifp = @ fopen( $file_path, 'wb' );
         if (!$ifp) {
-            $r->log->debug('cannot write file '.$file_path);
+            $r->log->logDebug('cannot write file '.$file_path);
             $r->renderError(500,'cannot write file '.$file_path);
         }
 

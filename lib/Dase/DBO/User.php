@@ -34,10 +34,10 @@ class Dase_DBO_User extends Dase_DBO_Autogen_User
 			foreach ($row as $key => $val) {
 				$this->$key = $val;
 			}
-			$this->log->debug('DEBUG: retrieved user '.$eid);
+			$this->log->logDebug('DEBUG: retrieved user '.$eid);
 			return $this;
 		} else {
-			$this->log->debug('DEBUG: could NOT retrieve user '.$eid);
+			$this->log->logDebug('DEBUG: could NOT retrieve user '.$eid);
 			return false;
 		}
 	}

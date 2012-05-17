@@ -11,7 +11,7 @@ $conf['app']['main_title'] = 'Dase Framework';
 $conf['app']['default_handler'] = 'home';
 $conf['request_handler']['login'] = 'google';
 $conf['app']['user_class'] = 'Dase_DBO_User';
-$conf['app']['log_level'] = 'DEBUG'; //DEBUG,INFO,WARNING,ERROR
+$conf['app']['log_level'] = Dase_Logger::DEBUG; //OFF,DEBUG,INFO,NOTICE,WARN,ERR,CRIT,ALERT,EMERG
 $conf['app']['template_auto_reload'] = true;
 $conf['app']['google_maps_api_key'] = '';
 

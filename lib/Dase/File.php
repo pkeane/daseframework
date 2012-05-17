@@ -1,8 +1,5 @@
 <?php
 
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
 abstract class Dase_File
 {
 	public static $types_map = array(
@@ -65,8 +62,7 @@ abstract class Dase_File
 			$this->filename = str_replace("." . $this->extension,'',$path_parts['basename']);
 		}
 
-        $this->log = new Logger('file');
-        $this->log->pushHandler(new StreamHandler(LOG_FILE,LOG_LEVEL));
+        $this->log = Dase_Logger::instance(LOG_DIR,LOG_LEVEL);
 	}
 
 	static function getExtension($mime_type)
@@ -195,7 +191,7 @@ abstract class Dase_File
 				try {
 					$item->setValue('admin_'.$term,$text);
 				} catch (Exception $e) {
-					$this->log->debug("could not write admin $term: $text ERROR: ".$e->getMessage());
+					$this->log->logDebug("could not write admin $term: $text ERROR: ".$e->getMessage());
 				}
 			}
 		}
@@ -283,7 +279,7 @@ abstract class Dase_File
 		$media_file->p_collection_ascii_id = $collection->ascii_id;
 		$media_file->p_serial_number = $item->serial_number;
 		$media_file->insert();
-		$this->log->info("created $media_file->size $media_file->filename");
+		$this->log->logInfo("created $media_file->size $media_file->filename");
 	}
 
 	/** will be invoked by subclass */
@@ -306,7 +302,7 @@ abstract class Dase_File
 		$media_file->p_collection_ascii_id = $collection->ascii_id;
 		$media_file->p_serial_number = $item->serial_number;
 		$media_file->insert();
-		$this->log->info("created $media_file->size $media_file->filename");
+		$this->log->logInfo("created $media_file->size $media_file->filename");
 	}
 
     public static function findNextUnique($base_dir,$basename,$ext,$iter=0)

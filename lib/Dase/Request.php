@@ -4,9 +4,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
 class Dase_Request 
 {
 	public static $types = array(
@@ -87,8 +84,7 @@ class Dase_Request
         $this->module = $this->getModule();
 		$this->module_root = $this->app_root.'/modules/'.$this->module;
 
-        $this->log = new Logger('request');
-        $this->log->pushHandler(new StreamHandler(LOG_FILE,LOG_LEVEL));
+        $this->log = Dase_Logger::instance(LOG_DIR,LOG_LEVEL);
 	}
 
     public function getContentType()
@@ -278,7 +274,7 @@ class Dase_Request
 			if(!file_exists(BASE_PATH.'/modules/'.$custom_handlers[$h])) {
 				$this->renderError(404,'no such module');
 			}
-			$this->log->info('**PLUGIN ACTIVATED**: handler:'.$h.' module:'.$custom_handlers[$h]);
+			$this->log->logInfo('**PLUGIN ACTIVATED**: handler:'.$h.' module:'.$custom_handlers[$h]);
 			$this->setModule($custom_handlers[$h]);
 		}
 	}
@@ -342,7 +338,7 @@ class Dase_Request
             'app_root' => $this->app_root,
             'module' => $this->module,
         );
-		$this->log->debug('request',$data);
+		$this->log->logDebug('request',$data);
 	}
 
 	public function initCookie()
@@ -382,7 +378,7 @@ class Dase_Request
 		$query_string = preg_replace("!cache_buster=[0-9]*!i",'cache_buster=stripped',$this->query_string);
 		//allows us to pass in a ttl 
 		$query_string = preg_replace("!(&|\?)ttl=[0-9]*!i",'',$query_string);
-		$this->log->debug('cache id is '. $this->method.'|'.$this->path.'|'.$this->format.'|'.$query_string);
+		$this->log->logDebug('cache id is '. $this->method.'|'.$this->path.'|'.$this->format.'|'.$query_string);
 		return $this->method.'|'.$this->path.'|'.$this->format.'|'.$query_string;
 	}
 
@@ -519,14 +515,14 @@ class Dase_Request
 
 		if ($this->htuser && $this->htpass) {
 			$eid = $this->htuser;
-			//$this->log->debug('adding password '.substr(md5($this->token.$eid.'httpbasic'),0,12));
-			//$this->log->debug('token is '.$this->token);
+			$this->log->logDebug('adding password '.substr(md5($this->token.$eid.'httpbasic'),0,12));
+			$this->log->logDebug('token is '.$this->token);
 			$passwords[] = substr(md5($this->token.$eid.'httpbasic'),0,12);
 
 			//for service users:
 			//if eid is among service users, get password w/ service_token as salt
 			if (isset($this->serviceusers[$eid])) {
-				$this->log->debug('serviceuser request from '.$eid);
+				$this->log->logDebug('serviceuser request from '.$eid);
 				$passwords[] = md5($this->service_token.$eid);
 			}
 
@@ -541,20 +537,20 @@ class Dase_Request
 				if ($u->retrieveByEid($eid)) {
 					$pass_md5 = md5($this->htpass);
 					if ($pass_md5 == $u->service_key_md5) {
-						$this->log->debug('accepted user '.$eid.' using password '.$this->htpass);
+						$this->log->logDebug('accepted user '.$eid.' using password '.$this->htpass);
 						return $eid;
 					}
 				}
 			}
 
 			if (in_array($this->htpass,$passwords)) {
-				$this->log->debug('accepted user '.$eid.' using password '.$this->htpass);
+				$this->log->logDebug('accepted user '.$eid.' using password '.$this->htpass);
 				return $eid;
 			} else {
-				$this->log->debug('rejected user '.$eid.' using password '.$this->htpass);
+				$this->log->logDebug('rejected user '.$eid.' using password '.$this->htpass);
 			}
 		} else {
-			$this->log->debug('PHP_AUTH_USER and/or PHP_AUTH_PW not set');
+			$this->log->logDebug('PHP_AUTH_USER and/or PHP_AUTH_PW not set');
 		}
 		header('WWW-Authenticate: Basic realm="DASe"');
 		header('HTTP/1.1 401 Unauthorized');

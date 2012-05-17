@@ -15,7 +15,7 @@ $config = new Dase_Config(BASE_PATH);
 $config->load('inc/config.php');
 $config->load('inc/local_config.php');
 
-define('LOG_FILE',$config->getLogDir().'/dase.log');
+define('LOG_DIR',$config->getLogDir());
 define('LOG_LEVEL',$config->getLogLevel());
 define('CONVERT',$config->getAppSettings('convert'));
 define('MEDIA_DIR',$config->getMediaDir());
