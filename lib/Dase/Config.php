@@ -56,13 +56,7 @@ class Dase_Config {
 
     public function getLogLevel()
     {
-        $log_levels = array(
-            'DEBUG' =>  100,
-            'INFO' => 200,
-            'WARNING' => 300,
-            'ERROR' => 400,
-        );
-        return $log_levels[$this->getAppSettings('log_level')];
+        return $this->getAppSettings('log_level');
     }
 
 
