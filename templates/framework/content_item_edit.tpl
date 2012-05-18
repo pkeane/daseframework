@@ -29,12 +29,6 @@
             </select>
         </div>
     </div>
-    <div class="control-group">
-        <label class="control-label">Thumbnail</label>
-        <div class="controls">
-            <img src="{{ item.thumbnail_url }}">
-        </div>
-    </div>
 
     <!-- beware that these do not trounce form values -->
     <input type="hidden" value="{{ not_set }}" name="not_set">

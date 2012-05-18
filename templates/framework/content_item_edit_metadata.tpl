@@ -1,6 +1,19 @@
 
 {% block content %}
 
+<form method="post" action="content/items/{{ item.id }}/metadata" id="bulk_add" class="well form-inline">
+    <input type="hidden" name="items" value="|">
+    <h3>Add Metadata to Item</h3>
+    <select name="attribute_id">
+        <option value="">select an attribute:</option>
+        {% for att in atts %}
+        <option value="{{ att.id }}">{{ att.name }}</option>
+        {% endfor %}
+    </select>
+    <span id="att_input_form"></span>
+    <input type="submit" class="btn btn-primary" value="add metadata">
+</form>
+
 <div class="well">
     <h3>Edit Metadata</h3>
     <table id="item_metadata" class="table table-striped table-condensed">
@@ -22,18 +35,5 @@
     </tbody>
 </table>
 </div>
-
-<form method="post" action="content/items/{{ item.id }}/metadata" id="bulk_add" class="well form-inline">
-    <input type="hidden" name="items" value="|">
-    <h3>Add Metadata to Item</h3>
-    <select name="attribute_id">
-        <option value="">select an attribute:</option>
-        {% for att in atts %}
-        <option value="{{ att.id }}">{{ att.name }}</option>
-        {% endfor %}
-    </select>
-    <span id="att_input_form"></span>
-    <input type="submit" class="btn btn-primary" value="add metadata">
-</form>
 
 {% endblock %}

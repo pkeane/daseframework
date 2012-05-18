@@ -8,30 +8,18 @@ body {
     text-align: center;
 }
 
-dl.fix dt {
-    min-height: 18px;
-}
-dl.fix dd {
-    min-height: 18px;
-}
-
-dl.metadata {
-    background-color: #eee;
-    padding: 6px 3px;
-    margin-top: 0px;
-}
-
-dl.metadata hr {
-    color: #bbb;
-    background-color: #bbb;
-    height: 5px;
-}
-
 th[scope="row"] {
     color: #666;
     text-align: right;
     padding-right: 20px;
     width: 110px;
+}
+
+dl.fix dt {
+    min-height: 18px;
+}
+dl.fix dd {
+    min-height: 18px;
 }
 
 ul.contact_sheet div.thumbnail {
@@ -57,7 +45,6 @@ ul.thumbnails li.highlight {
 
 ul.thumbnails li.type div.thumbnail {
     border-color: #999;
-    border-width: 2px;
 }
 
 span.inactive {
