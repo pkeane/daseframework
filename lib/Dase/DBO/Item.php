@@ -16,6 +16,24 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
         return $item->findOne();
     }
 
+    public static function getTypes($db)
+    {
+        $sql = "
+            SELECT type 
+            FROM item
+            WHERE type != ''
+            AND type IS NOT null
+            GROUP BY type
+            "; 
+        $sth = $db->getDbh()->prepare($sql);
+        $sth->execute();
+        $types = array();
+        foreach($sth->fetchAll() as $row) {
+            $types[] = $row['type'];
+        }
+        return $types;
+    }
+
     public static function retrieveSet($db,$r) 
     {
         $type = $r->get('type');
@@ -58,9 +76,9 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                    
             }
             if ($sort) {
-                $sql .= "ORDER BY item.$sort"; 
+                $sql .= " ORDER BY item.$sort"; 
             } else {
-                $sql .= "ORDER BY item.id DESC"; 
+                $sql .= " ORDER BY item.id DESC"; 
             }
             //print_r($exec_array); exit;
             $item = new Dase_DBO_Item($db);
@@ -77,8 +95,8 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
             $sql = "
                 SELECT item.*
                 FROM item 
-                WHERE body like ? 
-                OR title like ? 
+                WHERE (body like ? 
+                OR title like ?) 
                 ";
             if ($type) {
                 $sql .= "AND type = ?";
@@ -86,9 +104,9 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
                    
             }
             if ($sort) {
-                $sql .= "ORDER BY item.$sort";
+                $sql .= " ORDER BY item.$sort";
             } else {
-                $sql .= "ORDER BY item.id DESC"; 
+                $sql .= " ORDER BY item.id DESC"; 
             }
             $item = new Dase_DBO_Item($db);
             $sth = $db->getDbh()->prepare($sql);

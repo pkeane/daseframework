@@ -331,9 +331,7 @@ class Dase_Handler_Content extends Dase_Handler
         $r->assign('num',$r->get('num'));
         $r->assign('display',$r->get('display'));
         $r->assign('item',$item);
-        $types = new Dase_DBO_Item($this->db);
-        $types->type = 'type';
-        $r->assign('types',$types->findAll(1));
+        $r->assign('types',Dase_DBO_Item::getTypes($this->db));
         $r->assign('item',$item);
         $r->renderTemplate('framework/content_item_edit.tpl');
     }
@@ -385,6 +383,8 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $item->getMetadata($r);
         $r->assign('item',$item);
+        $types = Dase_DBO_Item::getTypes($this->db);
+        $r->assign('types',$types);
         $r->renderTemplate('framework/content_item.tpl');
     }
 
@@ -397,6 +397,8 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $item->getMetadata($r);
         $r->assign('item',$item);
+        $types = Dase_DBO_Item::getTypes($this->db);
+        $r->assign('types',$types);
         $r->renderTemplate('framework/content_item.tpl');
     }
 
@@ -604,6 +606,7 @@ class Dase_Handler_Content extends Dase_Handler
 
     public function getItems($r) 
     {
+        $types = Dase_DBO_Item::getTypes($this->db);
         $items = Dase_DBO_Item::retrieveSet($this->db,$r);
 
         //total == how many items total (unpaged) this search returns
@@ -648,6 +651,7 @@ class Dase_Handler_Content extends Dase_Handler
             $paginated = 10;
         }
 
+        $r->assign('types',$types);
         $r->assign('paginated',$paginated);
         $r->assign('total_pages',$total_pages);
         $r->assign('end',$end);
