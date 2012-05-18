@@ -34,15 +34,24 @@ class Dase_DBO_Item extends Dase_DBO_Autogen_Item
 
         //ignore $q if $att & $val
         if ($att && $val) {
-            $exec_array = array($att,$val);
-            $sql = "
-                SELECT item.* 
-                FROM value, attribute,item
-                WHERE attribute.ascii_id = ?
-                AND value.text = ?
-                AND value.attribute_id = attribute.id
-                AND item.id = value.item_id
-                ";
+            if ('title' == $att) {
+                $exec_array = array($val);
+                $sql = "
+                    SELECT * 
+                    FROM item
+                    WHERE title = ?
+                    ";
+            } else {
+                $exec_array = array($att,$val);
+                $sql = "
+                    SELECT item.* 
+                    FROM value, attribute,item
+                    WHERE attribute.ascii_id = ?
+                    AND value.text = ?
+                    AND value.attribute_id = attribute.id
+                    AND item.id = value.item_id
+                    ";
+            }
             if ($type) {
                 $sql .= "AND item.type = ?";
                 $exec_array[] = $type;

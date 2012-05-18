@@ -39,7 +39,13 @@
     <dl class="dl-horizontal fix metadata">
         {% for k,vs in item.metadata %}
         {% for v in vs %}
-        <dt>{{ k }}</dt><dd><a href="content/items?att={{ k }}&val={{ v }}">{{ v }}</a></dd>
+        <dt>{{ k }}</dt>
+        <dd>
+        <a href="content/items?att={{ k }}&amp;val={{ v }}">{{ v }}</a>
+        {% if att_map[k] %}
+        <a href="content/items?type={{ att_map[k] }}&amp;att=title&amp;val={{ v }}">[find]</a>
+        {% endif %}
+        </dd>
         {% endfor %}
         {% endfor %}
         <dt>----</dt><dd>----</dd>
