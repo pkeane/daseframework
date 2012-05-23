@@ -5,6 +5,7 @@ require_once 'Dase/DBO/Autogen/User.php';
 class Dase_DBO_User extends Dase_DBO_Autogen_User 
 {
 	public $is_superuser;
+    public $data_array = array();
 
 	public static function get($db,$id)
 	{
@@ -12,6 +13,55 @@ class Dase_DBO_User extends Dase_DBO_Autogen_User
 		$user->load($id);
 		return $user;
 	}
+
+    public function initData()
+    {
+        if ($this->data) {
+            $this->data_array = json_decode($this->data,1);
+        }
+    }
+
+    public function addHistoryTitle($title)
+    {
+        $this->initData();
+        if (!isset($this->data_array['history'])) {
+            return;
+        }
+        reset($this->data_array['history']);
+        $first_key = key($this->data_array['history']);
+        $this->data_array['history'][$first_key] = $title;
+        $this->update();
+    }
+
+    public function addHistory($uri)
+    {
+        $this->initData();
+        if (!isset($this->data_array['history'])) {
+            $this->data_array['history'] = array();
+        }
+        //remove serial number if it is in history
+        if (in_array($uri,$this->data_array['history'])) {
+            $index = array_search($uri,$this->data_array['history']);
+            unset($this->data_array['history'][$index]);
+        }
+        if (count($this->data_array['history']) > 7) {
+            array_pop($this->data_array['history']);
+        }
+
+        $new = array($uri => $uri);
+        $this->data_array['history'] = $new + $this->data_array['history'];
+        $this->update();
+    }
+
+    public function insert() {
+        $this->data = json_encode($this->data_array);
+        parent::insert();
+    }
+
+    public function update() {
+        $this->data = json_encode($this->data_array);
+        parent::update();
+    }
 
 	public function getUserCount()
 	{

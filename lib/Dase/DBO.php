@@ -144,15 +144,10 @@ class Dase_DBO implements IteratorAggregate
 		}
 	}
 
-	function insert($seq = '')
+	function insert()
 	{ //postgres needs id specified
 		if ('pgsql' == $this->db->getDbType()) {
-			if (!$seq) {
-				//beware!!! fix this after no longer using DB_DataObject
-				//$seq = $this->table . '_id_seq';
-				$seq = $this->table . '_seq';
-			}
-			//$id = "nextval('$seq'::text)";
+            $seq = $this->table . '_id_seq';
 			$id = "nextval(('public.$seq'::text)::regclass)"; 	
 		} elseif ('sqlite' == $this->db->getDbType()) {
 			$id = 'null';

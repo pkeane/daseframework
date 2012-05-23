@@ -1,22 +1,6 @@
-{% extends "framework/bootstrap.tpl" %}
+{% extends "framework/content.tpl" %}
 
 {% block content %}
-
-<div class="pull-right">
-    <form action="content/items" class="form-inline" method="get">
-        <input type="text" name="q" value="{{ q }}">
-        <select name="type">
-            <option value="">all types</option>
-            {% for ty in types %}
-            <option value="{{ ty }}" {%if type == ty %}selected{% endif %}>{{ ty }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="search" class="btn btn-primary">
-        <a href="content/create" class="btn btn-primary">create content</a>
-        <a href="content/attributes" class="btn btn-primary">manage attributes</a>
-    </form>
-</div>
-
 
 <div class="page-header">
     {% if num %}

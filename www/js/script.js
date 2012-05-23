@@ -20,6 +20,7 @@ $(document).ready(function() {
     //Dase.initEditItemForm();
     Dase.initInactiveLinks();
 
+    $('.dropdown-toggle').dropdown();
 
 });
 

@@ -1,12 +1,6 @@
-{% extends "framework/bootstrap.tpl" %}
+{% extends "framework/content.tpl" %}
 
 {% block content %}
-
-<div class="pull-right">
-    <a href="content/create" class="btn btn-primary">create content</a>
-    <a href="content/attributes" class="btn btn-primary">manage attributes</a>
-</div>
-
 
 <div class="page-header">
 <h2>{{ start }} - {{ end }} of {{ total }} total items

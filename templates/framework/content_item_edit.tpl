@@ -1,7 +1,6 @@
 
 {% block content %}
 <div class="container span8">
-
 <form id="edit_item_form" action="content/items/{{ item.id }}/edit" method="post" class="form-horizontal">
     <h3>Edit Item</h3>
     <div class="control-group">
@@ -23,8 +22,10 @@
             <select name="item_type">
                 <option value="">select one:</option>
                 <option {% if item.type == 'type' %}selected{% endif %}>type</option>
-                {% for type in types %}
-                <option {% if type.title == item.type %}selected{% endif %}>{{ type.title }}</option>
+                {% for itype in types %}
+                {% if itype != 'type' %} 
+                <option {% if itype.title == item.type %}selected{% endif %}>{{ itype }}</option>
+                {% endif %}
                 {% endfor %}
             </select>
         </div>

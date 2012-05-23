@@ -30,6 +30,7 @@
         <script src="www/js/jquery.js"></script>
         <script src="www/js/jquery-ui.js"></script>
         <script src="www/js/jquery.colorbox.js"></script>
+        <script src="www/js/bootstrap-dropdown.js"></script>
         {% endblock %}
 
         {% block head %}{% endblock %}
@@ -61,6 +62,7 @@
         {% endblock %}
 
         <div class="container">
+            {% block subheader %}{% endblock %}
             {% block main %}
             {% if msg %}<h3 class="msg">{{ msg }}</h3>{% endif %}
             {% block content %}

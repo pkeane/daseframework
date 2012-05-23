@@ -1,4 +1,4 @@
-{% extends "framework/bootstrap.tpl" %}
+{% extends "framework/content.tpl" %}
 
 {% block content %}
 <div class="container">

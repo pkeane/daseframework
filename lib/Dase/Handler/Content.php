@@ -37,6 +37,11 @@ class Dase_Handler_Content extends Dase_Handler
         } else {
             $r->renderError(401);
         }
+        if ('get' == $r->method && !in_array($r->resource,array('file','thumbnail','view'))) {
+            $this->user->addHistory($r->request_uri);
+            $r->assign('types',Dase_DBO_Item::getTypes($this->db));
+        }
+        $r->assign('nav','view');
     }
 
     public function deleteItemFiles($r) 
@@ -211,7 +216,9 @@ class Dase_Handler_Content extends Dase_Handler
             sort($values);
             $att->values = $values;
         }
+        $this->user->addHistoryTitle('Attribute Input Form');
         $r->assign('att',$att);
+        $r->assign('nav','attributes');
         $r->renderTemplate('framework/content_attribute_input_form.tpl');
     }
 
@@ -225,7 +232,9 @@ class Dase_Handler_Content extends Dase_Handler
             $att->values = json_decode($att->values_json,1);
             $r->assign('valstring',join("\n",$att->values));
         }
+        $this->user->addHistoryTitle('Edit Attribute ('.$att->name.')');
         $r->assign('att',$att);
+        $r->assign('nav','attributes');
         $r->renderTemplate('framework/content_attribute_edit.tpl');
     }
 
@@ -302,6 +311,8 @@ class Dase_Handler_Content extends Dase_Handler
     {
         $atts = new Dase_DBO_Attribute($this->db);
         $r->assign('atts',$atts->findAll(1));
+        $r->assign('nav','attributes');
+        $this->user->addHistoryTitle('Metadata Attributes');
         $r->renderTemplate('framework/content_attributes.tpl');
     }
 
@@ -331,8 +342,7 @@ class Dase_Handler_Content extends Dase_Handler
         $r->assign('num',$r->get('num'));
         $r->assign('display',$r->get('display'));
         $r->assign('item',$item);
-        $r->assign('types',Dase_DBO_Item::getTypes($this->db));
-        $r->assign('item',$item);
+        $this->user->addHistoryTitle('Edit Item ('.$item->title.')');
         $r->renderTemplate('framework/content_item_edit.tpl');
     }
 
@@ -351,9 +361,6 @@ class Dase_Handler_Content extends Dase_Handler
         $r->assign('max',$r->get('max'));
         $r->assign('num',$r->get('num'));
         $r->assign('display',$r->get('display'));
-        $types = new Dase_DBO_Item($this->db);
-        $types->type = 'type';
-        $r->assign('types',$types->findAll(1));
         $atts = new Dase_DBO_Attribute($this->db);
         $atts->orderBy('name');
         $atts = $atts->findAll(1);
@@ -383,8 +390,6 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $item->getMetadata($r);
         $r->assign('item',$item);
-        $types = Dase_DBO_Item::getTypes($this->db);
-        $r->assign('types',$types);
         $r->renderTemplate('framework/content_item.tpl');
     }
 
@@ -397,8 +402,7 @@ class Dase_Handler_Content extends Dase_Handler
         }
         $item->getMetadata($r);
         $r->assign('item',$item);
-        $types = Dase_DBO_Item::getTypes($this->db);
-        $r->assign('types',$types);
+        $this->user->addHistoryTitle('View Item '.$item->title);
         $r->renderTemplate('framework/content_item.tpl');
     }
 
@@ -572,9 +576,8 @@ class Dase_Handler_Content extends Dase_Handler
 
         public function getContentForm($r) 
         {
-            $types = new Dase_DBO_Item($this->db);
-            $types->type = 'type';
-            $r->assign('types',$types->findAll(1));
+            $r->assign('nav','create');
+            $this->user->addHistoryTitle('Create Content');
             $r->renderTemplate('framework/content_form.tpl');
         }
 
@@ -606,7 +609,6 @@ class Dase_Handler_Content extends Dase_Handler
 
     public function getItems($r) 
     {
-        $types = Dase_DBO_Item::getTypes($this->db);
         $items = Dase_DBO_Item::retrieveSet($this->db,$r);
 
         //total == how many items total (unpaged) this search returns
@@ -651,7 +653,6 @@ class Dase_Handler_Content extends Dase_Handler
             $paginated = 10;
         }
 
-        $r->assign('types',$types);
         $r->assign('paginated',$paginated);
         $r->assign('total_pages',$total_pages);
         $r->assign('end',$end);
@@ -679,6 +680,7 @@ class Dase_Handler_Content extends Dase_Handler
                 }
                 $r->assign('att_map',$att_map);
                 $item->getMetadata($r);
+                $this->user->addHistoryTitle($item->title);
                 $r->assign('item',$item);
                 $r->assign('is_set',1);
                 $r->renderTemplate('framework/content_item.tpl');
@@ -687,6 +689,8 @@ class Dase_Handler_Content extends Dase_Handler
 
         $items = array_slice($items,$start-1,$max);
         $r->assign('items',$items);
+        $history_title = $start.' - '.$end.' of '.$total.' total items';
+        $this->user->addHistoryTitle($history_title);
 
         if ('table' == $r->get('display')) {
             $r->assign('display','table');

@@ -13,7 +13,7 @@ class Dase_DBO_Autogen_User extends Dase_DBO
 {
 	public function __construct($db,$assoc = false) 
 	{
-		parent::__construct($db,'user', array('eid','name','email','is_admin'));
+		parent::__construct($db,'user', array('eid','name','email','is_admin','data'));
 		if ($assoc) {
 			foreach ( $assoc as $key => $value) {
 				$this->fields[$key] = $value;
@@ -24,4 +24,5 @@ class Dase_DBO_Autogen_User extends Dase_DBO
     public function getName() { return $this->fields["name"]; }
     public function getEmail() { return $this->fields["email"]; }
     public function getIs_admin() { return $this->fields["is_admin"]; }
+    public function getData() { return $this->fields["data"]; }
 }

@@ -67,6 +67,7 @@ $sql = "
         `name` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
         `email` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
         `is_admin` tinyint(1) DEFAULT NULL,
+        `data` text COLLATE utf8_unicode_ci,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 ";

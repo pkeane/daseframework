@@ -1,15 +1,9 @@
-{% extends "framework/bootstrap.tpl" %}
+{% extends "framework/content.tpl" %}
 
 {% block content %}
 <div class="container">
-<div class="row">
-    <div class="pull-right">
-        <a href="content/create" class="btn btn-primary">create content</a>
-        <a href="content/attributes" class="btn btn-primary">manage attributes</a>
-    </div>
-</div>
 
-        <h3>Edit Attribute ({{ att.ascii_id }})</h3>
+    <h3>Edit Attribute ({{ att.ascii_id }})</h3>
     <form action="content/attribute/{{ att.id }}/edit" method="post" class="well form-horizontal">
         <div class="control-group">
             <label class="control-label" for="input-name">Name</label>
