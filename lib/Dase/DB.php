@@ -187,7 +187,9 @@ class Dase_DB {
 		}
 		$sql = "SELECT column_name, data_type, character_maximum_length, is_nullable,column_default
 			FROM information_schema.columns 
-			WHERE table_name = '$table'";
+			WHERE table_name = '$table'
+			AND table_schema = '$this->name'
+			";
 		$sth = $dbh->prepare($sql);
 		$sth->execute();
 		return ($sth->fetchAll(PDO::FETCH_ASSOC));
