@@ -7,6 +7,8 @@ define('BASE_PATH',dirname(__FILE__).'/..');
 include('../inc/autoload.php');
 
 $config = new Dase_Config(BASE_PATH);
+define('LOG_DIR',$config->getLogDir());
+define('LOG_LEVEL',$config->getLogLevel());
 $config->load('inc/config.php');
 $config->load('inc/local_config.php');
 $db = new Dase_DB($config);

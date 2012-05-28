@@ -144,7 +144,7 @@ class Dase_DBO implements IteratorAggregate
 		}
 	}
 
-	function insert()
+	function insert($seq='')
 	{ //postgres needs id specified
 		if ('pgsql' == $this->db->getDbType()) {
             $seq = $this->table . '_id_seq';
