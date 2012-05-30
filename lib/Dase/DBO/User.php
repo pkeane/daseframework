@@ -53,7 +53,7 @@ class Dase_DBO_User extends Dase_DBO_Autogen_User
         $this->update();
     }
 
-    public function insert() {
+    public function insert($seq='') {
         $this->data = json_encode($this->data_array);
         parent::insert();
     }
