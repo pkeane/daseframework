@@ -73,6 +73,8 @@ class Dase_Handler_Content extends Dase_Handler
         $r->renderRedirect('content/items');
     }
 
+    /*
+     * not used saved as example
     public function putItemMetadataValue($r)
     {
         $item = new Dase_DBO_Item($this->db);
@@ -87,6 +89,7 @@ class Dase_Handler_Content extends Dase_Handler
             $r->renderOk();
         }
     }
+     */
 
     public function postToItemMetadataValue($r)
     {
