@@ -21,7 +21,7 @@ $conf['app']['main_title'] = "My DASe Archive";
 
 $conf['app']['user_class'] = 'Dase_DBO_DaseUser';
 
-$conf['app']['log_level'] = Dase_Logger::ERR; //OFF,DEBUG,INFO,NOTICE,WARN,ERR,CRIT,ALERT,EMERG
+$conf['app']['log_level'] = Dase_Logger::ERROR; //OFF,INFO,DEBUG,ERROR
 
 //path to imagemagick convert
 $conf['app']['convert'] = '/usr/bin/convert';
