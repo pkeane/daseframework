@@ -206,6 +206,9 @@ class Dase_Request
         if (strpos($pathinfo,'.')) {
             $exploded = explode('.',$this->sf_request->getPathInfo());
             $ext = array_pop($exploded);
+						if (!isset(self::$types[$ext])) {
+								$ext = 'html';
+						}
         } else {
             $ext = 'html'; 
         }
