@@ -14,12 +14,19 @@
         <div class="span6">
             <h2>Find User in UT Directory</h2>
             <form>
-                <label for="lastname">last name:</label>
+                <label for="lastname">last name or UT EID:</label>
                 <input type="text" name="lastname" value="{{ lastname }}">
                 <input type="submit" value="search">
             </form>
+            <h3>Results for {{ lastname }} as Last Name</h3>
             <ul class="results">
                 {% for person in results %}
+                <li><a href="admin/add_user_form/{{ person.eid }}">{{ person.name }} : {{ person.eid }} ({{ person.unit }})</a></li>
+                {% endfor %}
+            </ul>
+            <h3>Results for {{ lastname }} as UT EID</h3>
+            <ul class="results">
+                {% for person in results_eid %}
                 <li><a href="admin/add_user_form/{{ person.eid }}">{{ person.name }} : {{ person.eid }} ({{ person.unit }})</a></li>
                 {% endfor %}
             </ul>

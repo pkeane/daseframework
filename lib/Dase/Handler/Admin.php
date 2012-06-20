@@ -36,9 +36,11 @@ class Dase_Handler_Admin extends Dase_Handler
     {
         if ($r->get('lastname')) {
             $results = Utlookup::lookup($r->get('lastname'),'sn');
+            $results_eid = Utlookup::lookup($r->get('lastname'),'uid');
             usort($results,'sortByName');
             $r->assign('lastname',$r->get('lastname'));
             $r->assign('results',$results);
+            $r->assign('results_eid',$results_eid);
         }
         $r->renderTemplate('framework/admin_directory.tpl');
     }
