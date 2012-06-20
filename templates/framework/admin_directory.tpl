@@ -18,18 +18,26 @@
                 <input type="text" name="lastname" value="{{ lastname }}">
                 <input type="submit" value="search">
             </form>
+						{% if results %}
             <h3>Results for {{ lastname }} as Last Name</h3>
             <ul class="results">
                 {% for person in results %}
                 <li><a href="admin/add_user_form/{{ person.eid }}">{{ person.name }} : {{ person.eid }} ({{ person.unit }})</a></li>
                 {% endfor %}
             </ul>
+						{% else %}
+            <h3>No results for {{ lastname }} as Last Name</h3>
+						{% endif %}
+						{% if results_eid %}
             <h3>Results for {{ lastname }} as UT EID</h3>
             <ul class="results">
                 {% for person in results_eid %}
                 <li><a href="admin/add_user_form/{{ person.eid }}">{{ person.name }} : {{ person.eid }} ({{ person.unit }})</a></li>
                 {% endfor %}
             </ul>
+						{% else %}
+            <h3>No results for {{ lastname }} as UT EID</h3>
+						{% endif %}
         </div>
     </div>
 </div>
