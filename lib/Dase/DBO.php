@@ -29,6 +29,14 @@ class Dase_DBO implements IteratorAggregate
         $this->log = Dase_Logger::instance(LOG_DIR,LOG_LEVEL);
 	}
 
+    //yea LATE STATIC BINDING
+    public static function getAll($db)
+    {  
+        $child = get_called_class();
+        $instance = new $child($db);
+        return $instance->findAll(1);
+    }
+
 	public function getTable($include_prefix = true)
 	{
 		if ($include_prefix) {
