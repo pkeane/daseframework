@@ -30,10 +30,13 @@ class Dase_DBO implements IteratorAggregate
 	}
 
     //yea LATE STATIC BINDING
-    public static function getAll($db)
+    public static function getAll($db,$sort_by='')
     {  
         $child = get_called_class();
         $instance = new $child($db);
+        if ($sort_by) {
+            $instance->orderBy($sort_by);
+        }
         return $instance->findAll(1);
     }
 
