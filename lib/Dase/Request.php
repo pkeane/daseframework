@@ -566,8 +566,9 @@ class Dase_Request
     {
         $response = new Response($content);
         $response->headers->set('Content-Type',$this->mime);
-        if ('get' != $this->method) {
-            $set_cache = false;
+        if ('get' == $this->method && $set_cache) {
+            $cache_id = $this->getCacheId();
+            $this->getCache()->setData($cache_id,$content);
         }
         $response->send();
         exit;
@@ -578,8 +579,9 @@ class Dase_Request
         $content = $this->template->fetch($path);
         $response = new Response($content);
         $response->headers->set('Content-Type',$this->mime);
-        if ('get' != $this->method) {
-            $set_cache = false;
+        if ('get' == $this->method) {
+            $cache_id = $this->getCacheId();
+            $this->getCache()->setData($cache_id,$content);
         }
         $response->send();
         exit;
