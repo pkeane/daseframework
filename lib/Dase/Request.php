@@ -67,6 +67,7 @@ class Dase_Request
     public function __construct()
     {
         $this->sf_request = Request::createFromGlobals();
+        $this->sf_response = new Response();
 
         list ($this->path,$this->ext) = $this->getPathAndExtension();
 
@@ -86,6 +87,11 @@ class Dase_Request
         $this->module_root = $this->app_root.'/modules/'.$this->module;
 
         $this->log = Dase_Logger::instance(LOG_DIR,LOG_LEVEL);
+    }
+
+    public function getResponse()
+    {
+        return $this->sf_response;
     }
 
     public function getContentType()
@@ -564,7 +570,8 @@ class Dase_Request
 
     public function renderResponse($content,$set_cache=true,$status_code=null)
     {
-        $response = new Response($content);
+        $response = $this->sf_response;
+        $response->setContent($content);
         $response->headers->set('Content-Type',$this->mime);
         if ('get' == $this->method && $set_cache) {
             $cache_id = $this->getCacheId();
@@ -577,7 +584,8 @@ class Dase_Request
     public function renderTemplate($path)
     {
         $content = $this->template->fetch($path);
-        $response = new Response($content);
+        $response = $this->sf_response;
+        $response->setContent($content);
         $response->headers->set('Content-Type',$this->mime);
         if ('get' == $this->method) {
             $cache_id = $this->getCacheId();
@@ -589,7 +597,7 @@ class Dase_Request
 
     public function renderOk($msg='ok')
     {
-        $response = new Response();
+        $response = $this->sf_response;
         $response->setStatusCode(200);
         $response->setContent($msg);
         $response->headers->set('Content-Type','text/plain');
@@ -679,7 +687,7 @@ class Dase_Request
 
     public function renderError($code,$msg='',$log_error=true)
     {
-        $response = new Response();
+        $response = $this->sf_response;
         $response->setStatusCode($code);
         if (!$msg) {
             $msg = Response::$statusTexts[$code];
