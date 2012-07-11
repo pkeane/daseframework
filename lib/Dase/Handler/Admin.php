@@ -71,7 +71,7 @@ class Dase_Handler_Admin extends Dase_Handler
         $u = new Dase_DBO_User($this->db);
         $u->eid = $r->get('eid');
         if ($u->findOne()) {
-            $r->tpl->assign('user',$u);
+            $r->assign('user',$u);
         }
         $r->assign('record',$record);
         $r->renderTemplate('framework/admin_add_user.tpl');
