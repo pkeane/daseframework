@@ -16,7 +16,7 @@
         {% for att in atts %}
         <tr>
             <td>
-                <a href="content/attribute/{{ att.id }}">{{ att.name }}</a>
+                <a href="content/attribute/{{ att.id }}/edit">{{ att.name }}</a>
             </td>
             <td>
                 {{ att.ascii_id }}
