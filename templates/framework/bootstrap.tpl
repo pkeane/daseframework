@@ -11,6 +11,7 @@
 
         <!-- Le styles -->
         <link href="www/css/bootstrap.css" rel="stylesheet">
+        <link href="www/css/bootstrap-docs.css" rel="stylesheet">
         <link href="www/css/bootstrap-responsive.css" rel="stylesheet">
         <link href="www/css/colorbox.css" rel="stylesheet">
         <link href="www/css/local.css" rel="stylesheet">
@@ -33,8 +34,8 @@
         <script src="www/js/bootstrap-dropdown.js"></script>
         {% endblock %}
 
-        {% block head %}{% endblock %}
         <script src="www/js/script.js"></script>
+        {% block head %}{% endblock %}
     </head>
 
     <body>
