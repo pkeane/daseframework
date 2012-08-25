@@ -20,7 +20,7 @@ class Dase_DB {
 		$this->name = $config->getDb('name');
 		$this->user = $config->getDb('user');
 		$this->pass = $config->getDb('pass');
-		$this->pass = $config->getDb('cert');
+		$this->cert = $config->getDb('cert');
 		if ($config->getDb('path')) {
 			$this->path = $config->getDb('path');
 		}
