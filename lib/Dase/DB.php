@@ -34,6 +34,9 @@ class Dase_DB {
 			return $this->dbh;
 		}
 		$driverOpts = array();
+        if ($this->cert) {
+            $driverOpts[PDO::MYSQL_ATTR_SSL_CA] = $this->cert;
+        }
 		if ('sqlite' == $this->type) {
 			$dsn = "sqlite:".$this->path;
 		} else {
