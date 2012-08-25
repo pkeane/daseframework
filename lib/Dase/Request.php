@@ -157,6 +157,11 @@ class Dase_Request
         }
     }
 
+    public function keys()
+    {  
+        return $this->sf_request->request->keys();
+    }
+
     //todo: work on returning arrays when appropriate
     public function get($key)
     {
